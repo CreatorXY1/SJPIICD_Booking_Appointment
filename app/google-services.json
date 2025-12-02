@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "355997838626",
+    "project_id": "sjpiicd-server",
+    "storage_bucket": "sjpiicd-server.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355997838626:android:6267a0a48f34b9d6ea897b",
+        "android_client_info": {
+          "package_name": "com.example.sjpiicdapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDh3hjwfeXof7_dz43pJcwMRhsT-cDpQIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
