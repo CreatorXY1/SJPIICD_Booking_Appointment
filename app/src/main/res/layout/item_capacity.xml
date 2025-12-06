@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardElevation="10dp"
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="#424242">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:paddingBottom="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:background="#6A1B9A">
+
+        <!-- Top row: date left, count right -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvCapacityDate"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="2025-12-01"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"/>
+
+            <TextView
+                android:id="@+id/tvCapacityNumbers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 / 400"
+                android:textSize="14sp"
+                android:textColor="#E0E0E0"
+                android:paddingStart="8dp"
+                android:paddingEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/tvCapacityRemaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="88 left"
+                android:textSize="14sp"
+                android:textColor="#BA68C8"
+                android:paddingStart="8dp"/>
+        </LinearLayout>
+
+        <!-- Progress bar (horizontal) -->
+        <ProgressBar
+            android:id="@+id/progressBarDay"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_marginTop="8dp"
+            android:progress="0"
+            android:max="400"
+            android:indeterminate="false"
+            android:progressTint="#9C27B0"
+            android:backgroundTint="#616161" />
+
+        <!-- Optional small helper text -->
+        <TextView
+            android:id="@+id/tvCapacityHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Capacity: 400 per day"
+            android:textSize="12sp"
+            android:textColor="#E1BEE7"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginBottom="8dp"/>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

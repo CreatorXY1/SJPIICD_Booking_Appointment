@@ -4,14 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardElevation="2dp"
-    app:cardCornerRadius="8dp">
+    app:cardElevation="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="#424242">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="#6A1B9A">
 
         <!-- Date and Time -->
         <LinearLayout
@@ -19,14 +21,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="12dp"
+            android:background="#8E24AA"
+            android:padding="12dp"
+            android:elevation="2dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="📅"
-                android:textSize="20sp"
-                android:layout_marginEnd="8dp"/>
+                android:textSize="24sp"
+                android:layout_marginEnd="12dp"/>
 
             <TextView
                 android:id="@+id/tvDateWindow"
@@ -36,14 +41,14 @@
                 android:text="2025-11-20 - 09:00-10:00"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#212121"/>
+                android:textColor="#FFFFFF"/>
         </LinearLayout>
 
         <!-- Divider -->
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"
+            android:layout_height="2dp"
+            android:background="#BA68C8"
             android:layout_marginVertical="8dp"/>
 
         <!-- Status -->
@@ -59,7 +64,8 @@
                 android:layout_height="wrap_content"
                 android:text="Status:"
                 android:textSize="14sp"
-                android:textColor="#757575"
+                android:textColor="#E1BEE7"
+                android:textStyle="bold"
                 android:layout_marginEnd="8dp"/>
 
             <TextView
@@ -69,9 +75,11 @@
                 android:text="PENDING"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#FF6F00"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="4dp"/>
+                android:textColor="#FFFFFF"
+                android:background="#FF6F00"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="6dp"
+                android:elevation="2dp"/>
         </LinearLayout>
 
         <!-- Payment Method -->
@@ -79,14 +87,17 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:background="#8E24AA"
+            android:padding="12dp"
+            android:elevation="2dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="💳"
-                android:textSize="16sp"
-                android:layout_marginEnd="8dp"/>
+                android:textSize="20sp"
+                android:layout_marginEnd="12dp"/>
 
             <TextView
                 android:id="@+id/tvPaymentMethod"
@@ -94,34 +105,42 @@
                 android:layout_height="wrap_content"
                 android:text="E-WALLET"
                 android:textSize="14sp"
-                android:textColor="#424242"/>
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"/>
         </LinearLayout>
 
+        <!-- Action Buttons -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="16dp">
 
             <ImageView
                 android:id="@+id/btnEdit"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="8dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="10dp"
                 android:src="@android:drawable/ic_menu_edit"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="Edit"/>
+                android:background="@drawable/button_circle_background"
+                android:backgroundTint="#9C27B0"
+                android:tint="#FFFFFF"
+                android:contentDescription="Edit"
+                android:elevation="4dp"/>
 
             <ImageView
                 android:id="@+id/btnDelete"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="8dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="10dp"
                 android:src="@android:drawable/ic_menu_delete"
-                android:background="?selectableItemBackgroundBorderless"
+                android:background="@drawable/button_circle_background"
+                android:backgroundTint="#FF5252"
+                android:tint="#FFFFFF"
                 android:layout_marginStart="12dp"
-                android:contentDescription="Delete"/>
+                android:contentDescription="Delete"
+                android:elevation="4dp"/>
         </LinearLayout>
 
     </LinearLayout>

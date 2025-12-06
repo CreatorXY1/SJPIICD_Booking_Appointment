@@ -16,17 +16,19 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.CollectionReference;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -37,6 +39,9 @@ import java.util.Map;
 public class MyAppointmentsActivity extends AppCompatActivity {
     private static final String TAG = "MyAppointmentActivity";
     public static final String EXTRA_APPT_ID = "APPT_ID"; // legacy key, supported for compatibility
+    private interface OnFailure {
+        void onFailure(Exception e);
+    }
 
     private LinearLayout appointmentContainer;
     private ProgressBar progressBar;
@@ -56,6 +61,181 @@ public class MyAppointmentsActivity extends AppCompatActivity {
         }
     }
 
+
+    private void deleteAppointmentWithSlotUpdate(DocumentSnapshot apptDoc, Runnable onSuccess, java.util.function.Consumer<Exception> onFailure) {
+        if (apptDoc == null) {
+            onFailure.accept(new IllegalArgumentException("Appointment doc is null"));
+            return;
+        }
+
+        String apptId = apptDoc.getId();
+        String date = apptDoc.contains("date") ? apptDoc.getString("date") : null;
+        String window = apptDoc.contains("window") ? apptDoc.getString("window") : null;
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference apptsRef = db.collection("appointments");
+
+        // If date/window missing, simply delete the appointment doc (fallback).
+        if (date == null || window == null) {
+            apptsRef.document(apptId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> onSuccess.run())
+                    .addOnFailureListener(onFailure::accept);
+            return;
+        }
+
+        String slotId = date + "_" + window;
+        DocumentReference slotRef = db.collection("slots").document(slotId);
+        DocumentReference apptRef = apptsRef.document(apptId);
+
+        db.runTransaction((Transaction.Function<Void>) transaction -> {
+            // Ensure appointment still exists
+            DocumentSnapshot currentAppt = transaction.get(apptRef);
+            if (!currentAppt.exists()) {
+                // Nothing to delete (already deleted)
+                return null;
+            }
+
+            // Decrement slot bookedCount if slot exists
+            DocumentSnapshot slotSnap = transaction.get(slotRef);
+            if (slotSnap.exists()) {
+                Long bookedCount = slotSnap.getLong("bookedCount");
+                if (bookedCount == null) bookedCount = 0L;
+                long newCount = Math.max(0L, bookedCount - 1L);
+                Map<String, Object> slotUpdates = new HashMap<>();
+                slotUpdates.put("bookedCount", newCount);
+                // If you want to remove the slot doc when both bookedCount==0 and it's newly created, you could,
+                // but safer to just set bookedCount to 0.
+                transaction.update(slotRef, slotUpdates);
+            }
+            // Delete appointment doc
+            transaction.delete(apptRef);
+
+            return null;
+        }).addOnSuccessListener(aVoid -> {
+            onSuccess.run();
+        }).addOnFailureListener(e -> {
+            onFailure.accept((Exception)e);
+        });
+    }
+
+    private void rescheduleAppointmentTransaction(
+            @NonNull com.google.firebase.firestore.DocumentSnapshot apptDoc,
+            @NonNull String newDate,
+            @NonNull String newWindow,
+            @NonNull Runnable onSuccess,
+            @NonNull OnFailure onFailure) {
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (apptDoc == null || !apptDoc.exists()) {
+            onFailure.onFailure(new IllegalArgumentException("Appointment missing"));
+            return;
+        }
+
+        final String apptId = apptDoc.getId();
+        final String oldDate = apptDoc.contains("date") ? apptDoc.getString("date") : null;
+        final String oldWindow = apptDoc.contains("window") ? apptDoc.getString("window") : null;
+
+        if (oldDate == null || oldWindow == null) {
+            onFailure.onFailure(new IllegalStateException("Appointment has no date/window"));
+            return;
+        }
+
+        final String oldSlotId = oldDate + "_" + oldWindow;
+        final String newSlotId = newDate + "_" + newWindow;
+
+        // No-op if nothing changed
+        if (oldSlotId.equals(newSlotId)) {
+            onSuccess.run();
+            return;
+        }
+
+        final DocumentReference apptRef = db.collection("appointments").document(apptId);
+        final DocumentReference oldSlotRef = db.collection("slots").document(oldSlotId);
+        final DocumentReference newSlotRef = db.collection("slots").document(newSlotId);
+
+        final long MAX_CAPACITY = 400L;
+
+        db.runTransaction((Transaction.Function<Void>) transaction -> {
+            // ---- 1) ALL READS FIRST (important) ----
+            com.google.firebase.firestore.DocumentSnapshot freshAppt = transaction.get(apptRef);
+            com.google.firebase.firestore.DocumentSnapshot oldSlotSnap = transaction.get(oldSlotRef);
+            com.google.firebase.firestore.DocumentSnapshot newSlotSnap = transaction.get(newSlotRef);
+
+            // Validate appointment still exists
+            if (!freshAppt.exists()) {
+                // Abort transaction with readable code
+                throw new FirebaseFirestoreException("APPOINTMENT_MISSING", FirebaseFirestoreException.Code.ABORTED);
+            }
+
+            // Extract old slot counts
+            long oldBooked = 0L;
+            long oldCapacity = MAX_CAPACITY;
+            boolean oldExists = oldSlotSnap.exists();
+            if (oldExists) {
+                Long ob = oldSlotSnap.getLong("bookedCount");
+                Long oc = oldSlotSnap.getLong("capacity");
+                if (ob != null) oldBooked = ob;
+                if (oc != null) oldCapacity = oc;
+            }
+
+            // Extract new slot counts
+            long newBooked = 0L;
+            long newCapacity = MAX_CAPACITY;
+            boolean newExists = newSlotSnap.exists();
+            if (newExists) {
+                Long nb = newSlotSnap.getLong("bookedCount");
+                Long nc = newSlotSnap.getLong("capacity");
+                if (nb != null) newBooked = nb;
+                if (nc != null) newCapacity = nc;
+            }
+
+            // ---- 2) Business rules / validation (still no writes) ----
+            if (newBooked >= newCapacity) {
+                // signal caller that the new slot is full
+                throw new FirebaseFirestoreException("NEW_SLOT_FULL", FirebaseFirestoreException.Code.ABORTED);
+            }
+
+            // ---- 3) ALL WRITES AFTER ALL READS ----
+            // Update appointment doc
+            Map<String, Object> apptUpdates = new HashMap<>();
+            apptUpdates.put("date", newDate);
+            apptUpdates.put("window", newWindow);
+            apptUpdates.put("updatedAt", FieldValue.serverTimestamp());
+            transaction.update(apptRef, apptUpdates);
+
+            // Decrement old slot bookedCount (if it exists)
+            if (oldExists) {
+                long newOldBooked = Math.max(0L, oldBooked - 1L);
+                Map<String, Object> oldSlotUpdates = new HashMap<>();
+                oldSlotUpdates.put("bookedCount", newOldBooked);
+                transaction.update(oldSlotRef, oldSlotUpdates);
+            }
+
+            // Increment or create new slot doc with bookedCount + 1
+            long newNewBooked = newBooked + 1L;
+            Map<String, Object> newSlotData = new HashMap<>();
+            newSlotData.put("date", newDate);
+            newSlotData.put("window", newWindow);
+            newSlotData.put("capacity", newCapacity);
+            newSlotData.put("bookedCount", newNewBooked);
+
+            if (!newExists) {
+                transaction.set(newSlotRef, newSlotData);
+            } else {
+                transaction.update(newSlotRef, newSlotData);
+            }
+
+            return null;
+        }).addOnSuccessListener(aVoid -> {
+            Log.i(TAG, "Reschedule transaction success for apptId=" + apptId);
+            onSuccess.run();
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "Reschedule failed", e);
+            onFailure.onFailure((Exception) e);
+        });
+    }
 
 
 
@@ -222,30 +402,27 @@ public class MyAppointmentsActivity extends AppCompatActivity {
 
             // DELETE handler
             if (btnDelete != null) {
+                // inside renderList loop, when you build item view and have doc variable
                 btnDelete.setOnClickListener(v -> {
                     new androidx.appcompat.app.AlertDialog.Builder(this)
                             .setTitle("Delete Appointment")
                             .setMessage("Are you sure you want to delete this appointment?")
                             .setPositiveButton("Delete", (dialog, which) -> {
                                 btnDelete.setEnabled(false);
-                                FirebaseFirestore.getInstance()
-                                        .collection("appointments")
-                                        .document(docId)
-                                        .delete()
-                                        .addOnSuccessListener(aVoid -> {
-                                            Toast.makeText(this, "Appointment deleted", Toast.LENGTH_SHORT).show();
-                                            // reload list
-                                            loadUserAppointments();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            btnDelete.setEnabled(true);
-                                            Toast.makeText(this, "Delete failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                            android.util.Log.e(TAG, "Delete failed", e);
-                                        });
+                                deleteAppointmentWithSlotUpdate(doc, () -> {
+                                    Toast.makeText(this, "Appointment deleted", Toast.LENGTH_SHORT).show();
+                                    // refresh list
+                                    loadUserAppointments();
+                                }, e -> {
+                                    btnDelete.setEnabled(true);
+                                    Toast.makeText(this, "Delete failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    Log.e(TAG, "Delete failed", e);
+                                });
                             })
                             .setNegativeButton("Cancel", null)
                             .show();
                 });
+
             }
 
             // EDIT / Reschedule handler
@@ -294,28 +471,32 @@ public class MyAppointmentsActivity extends AppCompatActivity {
 
                     btnCancel.setOnClickListener(x -> dialog.dismiss());
 
+                    // when you have new selectedDate/new selectedWindow ready
                     btnConfirm.setOnClickListener(x -> {
-                        selectedWindow[0] = spinnerSlots.getSelectedItem().toString();
+                        String newDateSelected = selectedDate[0];
+                        String newWindowSelected = spinnerSlots.getSelectedItem().toString();
                         btnConfirm.setEnabled(false);
-
-                        java.util.Map<String,Object> updates = new java.util.HashMap<>();
-                        updates.put("date", selectedDate[0]);
-                        updates.put("window", selectedWindow[0]);
-
-                        FirebaseFirestore.getInstance()
-                                .collection("appointments")
-                                .document(docId)
-                                .update(updates)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, "Rescheduled!", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                    loadUserAppointments();
-                                })
-                                .addOnFailureListener(e -> {
-                                    btnConfirm.setEnabled(true);
-                                    Toast.makeText(this, "Reschedule failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                });
+                        rescheduleAppointmentTransaction(doc, newDateSelected, newWindowSelected, () -> {
+                            Toast.makeText(this, "Rescheduled!", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            btnConfirm.setEnabled(true);
+                            loadUserAppointments();
+                        }, e -> {
+                            btnConfirm.setEnabled(true);
+                            String message = e.getMessage() != null ? e.getMessage() : e.toString();
+                            if (e instanceof FirebaseFirestoreException && ((FirebaseFirestoreException) e).getCode() == FirebaseFirestoreException.Code.ABORTED) {
+                                if (message.equals("NEW_SLOT_FULL")) {
+                                    Toast.makeText(this, "Cannot reschedule: selected slot is full.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(this, "Reschedule failed: " + message, Toast.LENGTH_LONG).show();
+                                }
+                            } else {
+                                Toast.makeText(this, "Reschedule failed: " + message, Toast.LENGTH_LONG).show();
+                            }
+                            Log.e(TAG, "Reschedule failed", e);
+                        });
                     });
+
 
                     dialog.show();
                 });

@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show();
 
                             // go to Dashboard and clear back stack so user can't go back to Login
-                            Intent intent = new Intent(this, DashboardActivity.class);
+                            Intent intent = new Intent(this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             // no finish needed because flags clear the task, but harmless:
@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.i("AuthDebug","register: SUCCESS uid=" + (mAuth.getCurrentUser()!=null?mAuth.getCurrentUser().getUid():"null"));
                             Toast.makeText(this, "Registered", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(this, DashboardActivity.class);
+                            Intent intent = new Intent(this, MainActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             finish();

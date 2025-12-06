@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootLayout"
+    android:id="@+id/capacityRoot0"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,72 +16,77 @@
         android:paddingEnd="24dp"
         android:paddingTop="48dp"
         android:paddingBottom="24dp"
-        android:elevation="8dp">
+        android:elevation="4dp">
 
         <TextView
+            android:id="@+id/tvCapacityTitle1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Appointments"
-            android:textSize="28sp"
+            android:text="Daily Appointment Capacity"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:shadowColor="#00000066"
-            android:shadowRadius="2"
-            android:shadowDx="0"
-            android:shadowDy="2"/>
+            android:textColor="#FFFFFF"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="View your scheduled appointments"
+            android:text="See how many students already booked per day"
             android:textSize="14sp"
             android:textColor="#E1BEE7"
             android:layout_marginTop="4dp"/>
     </LinearLayout>
 
-    <!-- Progress Bar -->
+    <!-- Progress -->
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progressBarCapacity1"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="48dp"
+        android:visibility="gone"
         android:indeterminateTint="#9C27B0"
-        android:visibility="gone"/>
+        android:layout_marginTop="28dp"/>
 
-    <!-- Error Message -->
+    <!-- Error -->
     <TextView
-        android:id="@+id/tvError"
+        android:id="@+id/tvCapacityError1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Error loading appointments"
+        android:text="Error loading capacity"
         android:visibility="gone"
         android:textColor="#FF5252"
         android:textSize="16sp"
-        android:textStyle="bold"
         android:gravity="center"
-        android:padding="24dp"
-        android:background="#424242"
-        android:layout_margin="16dp"/>
+        android:padding="24dp"/>
 
-    <!-- Appointments List -->
+    <!-- Container -->
     <ScrollView
-        android:id="@+id/scrollView"
+        android:id="@+id/scrollCapacity1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true">
 
         <LinearLayout
-            android:id="@+id/appointmentContainer"
+            android:id="@+id/capacityContainer1"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:paddingTop="8dp"
             android:paddingBottom="24dp"/>
     </ScrollView>
 
+    <!-- Optional refresh button -->
+    <Button
+        android:id="@+id/btnRefreshCapacity1"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Refresh"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#9C27B0"
+        android:textColor="#FFFFFF"/>
 </LinearLayout>

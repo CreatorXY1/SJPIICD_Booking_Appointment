@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="#2C2C2E"
     android:fillViewport="true">
 
     <LinearLayout
@@ -16,24 +16,31 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#1565C0"
-            android:padding="24dp"
-            android:elevation="4dp">
+            android:background="@drawable/header_gradient"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="48dp"
+            android:paddingBottom="24dp"
+            android:elevation="8dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Book Appointment"
-                android:textSize="24sp"
+                android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="#FFFFFF"/>
+                android:textColor="#FFFFFF"
+                android:shadowColor="#00000066"
+                android:shadowRadius="2"
+                android:shadowDx="0"
+                android:shadowDy="2"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fill in the details below"
                 android:textSize="14sp"
-                android:textColor="#E3F2FD"
+                android:textColor="#E1BEE7"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
 
@@ -42,29 +49,34 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="24dp">
 
             <!-- Date Selection Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp">
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="20dp">
+                    android:padding="20dp"
+                    android:background="#6A1B9A">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Select Date"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="#212121"
+                        android:textColor="#FFFFFF"
                         android:layout_marginBottom="12dp"/>
 
                     <Button
@@ -73,7 +85,12 @@
                         android:layout_height="56dp"
                         android:text="Choose Date"
                         android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="#E1BEE7"
+                        app:strokeWidth="2dp"
+                        app:cornerRadius="12dp"
                         android:drawableStart="@android:drawable/ic_menu_my_calendar"
                         android:drawablePadding="8dp"/>
 
@@ -85,22 +102,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp">
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="20dp">
+                    android:padding="20dp"
+                    android:background="#7B1FA2">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Select Time Window"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="#212121"
+                        android:textColor="#FFFFFF"
                         android:layout_marginBottom="12dp"/>
 
                     <Spinner
@@ -118,22 +137,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp">
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="20dp">
+                    android:padding="20dp"
+                    android:background="#8E24AA">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Payment Method"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="#212121"
+                        android:textColor="#FFFFFF"
                         android:layout_marginBottom="12dp"/>
 
                     <RadioGroup
@@ -148,7 +169,10 @@
                             android:layout_height="wrap_content"
                             android:text="E-Wallet / Bank Transfer"
                             android:textSize="16sp"
-                            android:padding="12dp"/>
+                            android:textColor="#FFFFFF"
+                            android:textStyle="bold"
+                            android:padding="12dp"
+                            android:buttonTint="#E1BEE7"/>
 
                         <RadioButton
                             android:id="@+id/rbSCHOOL"
@@ -156,8 +180,11 @@
                             android:layout_height="wrap_content"
                             android:text="Pay at School (Cashier)"
                             android:textSize="16sp"
+                            android:textColor="#FFFFFF"
+                            android:textStyle="bold"
                             android:padding="12dp"
-                            android:layout_marginTop="8dp"/>
+                            android:layout_marginTop="8dp"
+                            android:buttonTint="#E1BEE7"/>
                     </RadioGroup>
 
                 </LinearLayout>
@@ -169,10 +196,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:text="Confirm Booking"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginTop="8dp"
-                android:backgroundTint="#1565C0"/>
+                android:backgroundTint="#9C27B0"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="32dp"
+                android:elevation="6dp"/>
 
         </LinearLayout>
 
