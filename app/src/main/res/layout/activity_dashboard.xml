@@ -1,42 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="0dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    tools:context=".DashboardActivity">
+    android:background="#2C2C2E">
 
-    <!-- Header (kept as you had it) -->
+    <!-- Header -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#1565C0"
-        android:padding="24dp"
-        android:elevation="4dp">
+        android:background="@drawable/header_gradient"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="24dp"
+        android:elevation="8dp">
 
         <TextView
             android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Welcome, Student"
-            android:textSize="24sp"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF"
+            android:shadowColor="#00000066"
+            android:shadowRadius="2"
+            android:shadowDx="0"
+            android:shadowDy="2"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="What would you like to do today?"
             android:textSize="14sp"
-            android:textColor="#E3F2FD"
+            android:textColor="#E1BEE7"
             android:layout_marginTop="4dp"/>
     </LinearLayout>
 
-    <!-- Menu (cards) -->
+    <!-- Menu Cards -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -47,32 +51,39 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="24dp">
 
             <!-- Book Appointment Card -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardBook"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="16dp"
                 android:clickable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp">
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="20dp"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:background="#6A1B9A">
 
                     <TextView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
                         android:text="📅"
-                        android:textSize="32sp"
-                        android:gravity="center"/>
+                        android:textSize="36sp"
+                        android:gravity="center"
+                        android:background="#9C27B0"
+                        android:elevation="2dp"/>
 
                     <LinearLayout
                         android:orientation="vertical"
@@ -85,16 +96,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Book Appointment"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="#212121"/>
+                            android:textColor="#FFFFFF"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Schedule a new appointment"
                             android:textSize="14sp"
-                            android:textColor="#757575"
+                            android:textColor="#E1BEE7"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
 
@@ -102,8 +113,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="›"
-                        android:textSize="32sp"
-                        android:textColor="#BDBDBD"/>
+                        android:textSize="40sp"
+                        android:textColor="#E1BEE7"
+                        android:textStyle="bold"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -112,25 +124,29 @@
                 android:id="@+id/cardMyAppointments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="16dp"
                 android:clickable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp">
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="20dp"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:background="#7B1FA2">
 
                     <TextView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
                         android:text="📋"
-                        android:textSize="32sp"
-                        android:gravity="center"/>
+                        android:textSize="36sp"
+                        android:gravity="center"
+                        android:background="#9C27B0"
+                        android:elevation="2dp"/>
 
                     <LinearLayout
                         android:orientation="vertical"
@@ -143,16 +159,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="My Appointments"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="#212121"/>
+                            android:textColor="#FFFFFF"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="View and manage your bookings"
                             android:textSize="14sp"
-                            android:textColor="#757575"
+                            android:textColor="#E1BEE7"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
 
@@ -160,35 +176,41 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="›"
-                        android:textSize="32sp"
-                        android:textColor="#BDBDBD"/>
+                        android:textSize="40sp"
+                        android:textColor="#E1BEE7"
+                        android:textStyle="bold"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- E-Clearance Card (visible) -->
+            <!-- E-Clearance Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardClearance"
+                android:id="@+id/cardEclearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="16dp"
                 android:clickable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp">
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="20dp"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:background="#8E24AA">
 
                     <TextView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:text="📝"
-                        android:textSize="28sp"
-                        android:gravity="center"/>
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:text="✓"
+                        android:textSize="36sp"
+                        android:gravity="center"
+                        android:background="#9C27B0"
+                        android:textColor="#FFFFFF"
+                        android:elevation="2dp"/>
 
                     <LinearLayout
                         android:orientation="vertical"
@@ -201,16 +223,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="E-Clearance"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="#212121"/>
+                            android:textColor="#FFFFFF"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Check your Prelim / Midterm / Final clearance"
+                            android:text="Check clearance status"
                             android:textSize="14sp"
-                            android:textColor="#757575"
+                            android:textColor="#E1BEE7"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
 
@@ -218,12 +240,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="›"
-                        android:textSize="32sp"
-                        android:textColor="#BDBDBD"/>
+                        android:textSize="40sp"
+                        android:textColor="#E1BEE7"
+                        android:textStyle="bold"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Daily Capacity Card (NEW) -->
+            <!-- Daily Capacity Card -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardDailyCapacity"
                 android:layout_width="match_parent"
@@ -231,15 +254,17 @@
                 android:layout_marginBottom="12dp"
                 android:clickable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp">
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="20dp"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:background="#9C27B0">
 
                     <TextView
                         android:layout_width="48dp"
@@ -261,14 +286,14 @@
                             android:text="Daily Capacity"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="#212121"/>
+                            android:textColor="#FFFFFF"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="See how many students have booked per day"
+                            android:text="Check how many students already booked per day"
                             android:textSize="14sp"
-                            android:textColor="#757575"
+                            android:textColor="#E1BEE7"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
 
@@ -277,20 +302,8 @@
                         android:layout_height="wrap_content"
                         android:text="›"
                         android:textSize="32sp"
-                        android:textColor="#BDBDBD"/>
+                        android:textColor="#E1BEE7"/>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Hidden/backward compatibility clearance card (kept but hidden) -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardEclearance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:visibility="gone"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="8dp">
-                <!-- reserved for backward compatibility -->
             </androidx.cardview.widget.CardView>
 
             <!-- Sign Out Button -->
@@ -299,9 +312,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Sign Out"
-                android:layout_marginTop="24dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:textColor="#D32F2F"/>
+                android:textColor="#E1BEE7"
+                app:strokeColor="#9C27B0"
+                app:strokeWidth="2dp"
+                app:cornerRadius="28dp"/>
+
         </LinearLayout>
     </ScrollView>
+
 </LinearLayout>
