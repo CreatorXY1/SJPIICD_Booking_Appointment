@@ -1,50 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_margin="8dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="6dp"
-    app:cardBackgroundColor="#424242"
-    tools:context=".AdminManageClearanceActivity">
+    android:padding="12dp">
 
     <LinearLayout
-        android:padding="16dp"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#6A1B9A">
+        android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tvStudentName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Student Name"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvStudentEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="student@email"
-            android:textSize="14sp"
-            android:textColor="#E1BEE7"
-            android:layout_marginTop="4dp"/>
+            <TextView
+                android:id="@+id/tvStudentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student Name"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvStudentEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="student@example.com"
+                android:textColor="#E1BEE7"
+                android:textSize="14sp"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnEditClearance"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:text="Edit Clearance"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_marginTop="12dp"
+            android:layout_height="40dp"
+            android:text="Edit"
+            android:layout_marginStart="8dp"
             android:backgroundTint="#9C27B0"
-            android:textColor="#FFFFFF"
-            app:cornerRadius="24dp"/>
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+
+    <!-- Upload permit button (small, appears beside other actions) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/btnUploadPermit"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:text="Upload Permit"
+            android:backgroundTint="#1976D2"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+</LinearLayout>

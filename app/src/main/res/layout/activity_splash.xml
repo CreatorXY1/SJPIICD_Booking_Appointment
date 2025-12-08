@@ -11,7 +11,7 @@
         android:layout_width="140dp"
         android:layout_height="140dp"
         android:layout_gravity="center_horizontal|center_vertical"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/ic_sjpiicdaa"
         android:contentDescription="App logo"
         android:scaleType="centerInside"
         android:layout_marginBottom="48dp"

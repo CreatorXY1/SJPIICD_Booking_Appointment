@@ -2,6 +2,7 @@ package com.example.sjpiicdapp;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,18 +17,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.CheckBox;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MultipartBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class AdminManageClearanceActivity extends AppCompatActivity {
     private static final String TAG = "AdminManageClearance";
@@ -39,6 +53,16 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
     private Button btnRefresh;
 
     private FirebaseFirestore db;
+
+    // For picking images
+    private ActivityResultLauncher<String> pickImageLauncher;
+    private String editingUidForPermit;
+
+    // Cloudinary config - replace these with your values
+    private static final String CLOUDINARY_UPLOAD_PRESET = "YOUR_UNSIGNED_UPLOAD_PRESET";
+    private static final String CLOUDINARY_UPLOAD_URL = "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload";
+
+    private OkHttpClient httpClient = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +81,21 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
         btnRefresh.setOnClickListener(v -> loadStudents());
         findViewById(R.id.btnSearchManageClearance).setOnClickListener(v -> loadStudents());
 
+        pickImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri uri) {
+                        if (uri == null) {
+                            Toast.makeText(AdminManageClearanceActivity.this, "No image chosen", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        // perform upload
+                        uploadPermitImageForUser(editingUidForPermit, uri);
+                    }
+                }
+        );
+
         loadStudents();
     }
 
@@ -66,9 +105,8 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
         studentsContainer.removeAllViews();
 
         String q = etSearch.getText() != null ? etSearch.getText().toString().trim() : "";
-        Query query = db.collection("users").whereEqualTo("role", "student").orderBy("displayName");
+        Query query = db.collection("users").whereEqualTo("role", "student"); // keep as your pattern
 
-        // If user typed a search term, we'll do client-side filter after getting small set.
         query.get()
                 .addOnSuccessListener(qs -> {
                     showLoading(false);
@@ -94,11 +132,17 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
                         TextView tvName = item.findViewById(R.id.tvStudentName);
                         TextView tvEmail = item.findViewById(R.id.tvStudentEmail);
                         Button btnEdit = item.findViewById(R.id.btnEditClearance);
+                        Button btnUploadPermit = item.findViewById(R.id.btnUploadPermit);
 
                         tvName.setText(name);
                         tvEmail.setText(email);
 
                         btnEdit.setOnClickListener(v -> openEditorForStudent(d.getId(), name));
+                        btnUploadPermit.setOnClickListener(v -> {
+                            editingUidForPermit = d.getId();
+                            pickImageLauncher.launch("image/*");
+                        });
+
                         studentsContainer.addView(item);
                     }
 
@@ -116,7 +160,6 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
     }
 
     private void openEditorForStudent(String uid, String displayName) {
-        // Load current clearance doc for student (nested under users/{uid}/clearance or field users/{uid}.clearance)
         showLoading(true);
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(doc -> {
@@ -131,10 +174,10 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
                     }
                     if (clearance == null) clearance = new HashMap<>();
 
-                    // Build dialog UI
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Edit clearance: " + (displayName == null ? uid : displayName));
                     View dialogView = getLayoutInflater().inflate(R.layout.dialog_clearance_editor, null);
+
                     // Prelim
                     CheckBox cbPrelimAccounting = dialogView.findViewById(R.id.cbPrelimAccounting);
                     // Midterm
@@ -157,11 +200,6 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
                     CheckBox cbFinalSciLab = dialogView.findViewById(R.id.cbFinalSciLab);
                     CheckBox cbFinalSSC = dialogView.findViewById(R.id.cbFinalSSC);
 
-                    // Populate current values (safe casts)
-                    // clearance structure example:
-                    // clearance.prelim.accounting = true
-                    // clearance.midterm.accounting = true
-                    // clearance.final.accounting = true, final.admission = true, etc.
                     Map<String,Object> prelim = getSubMap(clearance, "prelim");
                     Map<String,Object> midterm = getSubMap(clearance, "midterm");
                     Map<String,Object> fin = getSubMap(clearance, "final");
@@ -194,7 +232,6 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
                     dialog.setOnShowListener(dialog1 -> {
                         Button btnSave = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
                         btnSave.setOnClickListener(v -> {
-                            // Build updated clearance map
                             Map<String,Object> newPrelim = new HashMap<>();
                             newPrelim.put("accounting", cbPrelimAccounting.isChecked());
 
@@ -225,7 +262,6 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
                             updates.put("clearance.final", newFinal);
                             updates.put("clearance.updatedAt", Timestamp.now());
 
-                            // Save atomically to user doc
                             showLoading(true);
                             db.collection("users").document(uid)
                                     .update(updates)
@@ -264,6 +300,105 @@ public class AdminManageClearanceActivity extends AppCompatActivity {
         Object o = map.get(key);
         if (o instanceof Boolean) return (Boolean) o;
         return false;
+    }
+
+    private void uploadPermitImageForUser(String uid, Uri imageUri) {
+        if (uid == null || imageUri == null) {
+            Toast.makeText(this, "Missing user or image", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        showLoading(true);
+        try {
+            InputStream is = getContentResolver().openInputStream(imageUri);
+            byte[] bytes = readAllBytes(is);
+            is.close();
+
+            RequestBody fileBody = RequestBody.create(bytes, MediaType.parse("image/*"));
+            MultipartBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", "permit.jpg", fileBody)
+                    .addFormDataPart("upload_preset", CLOUDINARY_UPLOAD_PRESET)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(CLOUDINARY_UPLOAD_URL)
+                    .post(requestBody)
+                    .build();
+
+            httpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    runOnUiThread(() -> {
+                        showLoading(false);
+                        Log.e(TAG, "Cloudinary upload failed", e);
+                        Toast.makeText(AdminManageClearanceActivity.this, "Permit upload failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    });
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    String body = response.body() != null ? response.body().string() : null;
+                    if (!response.isSuccessful() || body == null) {
+                        runOnUiThread(() -> {
+                            showLoading(false);
+                            Log.e(TAG, "Upload error: " + response.code() + " body: " + body);
+                            Toast.makeText(AdminManageClearanceActivity.this, "Upload failed: " + response.code(), Toast.LENGTH_LONG).show();
+                        });
+                        return;
+                    }
+                    String secureUrl = parseSecureUrlFromCloudinaryResponse(body);
+                    if (secureUrl == null) {
+                        runOnUiThread(() -> {
+                            showLoading(false);
+                            Log.e(TAG, "No secure_url in response: " + body);
+                            Toast.makeText(AdminManageClearanceActivity.this, "Upload succeeded but response invalid", Toast.LENGTH_LONG).show();
+                        });
+                        return;
+                    }
+
+                    Map<String,Object> update = new HashMap<>();
+                    update.put("clearance.permitUrl", secureUrl);
+                    update.put("clearance.permitReady", true);
+                    update.put("clearance.updatedAt", Timestamp.now());
+
+                    db.collection("users").document(uid).update(update)
+                            .addOnSuccessListener(aVoid -> runOnUiThread(() -> {
+                                showLoading(false);
+                                Toast.makeText(AdminManageClearanceActivity.this, "Permit uploaded & saved.", Toast.LENGTH_SHORT).show();
+                            }))
+                            .addOnFailureListener(e -> runOnUiThread(() -> {
+                                showLoading(false);
+                                Log.e(TAG, "Failed to save permit URL to Firestore", e);
+                                Toast.makeText(AdminManageClearanceActivity.this, "Upload OK but saving failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }));
+                }
+            });
+        } catch (Exception ex) {
+            showLoading(false);
+            Log.e(TAG, "Failed to read image", ex);
+            Toast.makeText(this, "Failed to read image: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // crude extraction - use proper JSON parsing if you like (Gson)
+    private String parseSecureUrlFromCloudinaryResponse(String json) {
+        String key = "\"secure_url\":\"";
+        int idx = json.indexOf(key);
+        if (idx < 0) return null;
+        int start = idx + key.length();
+        int end = json.indexOf('"', start);
+        if (end < 0) return null;
+        return json.substring(start, end).replace("\\/", "/");
+    }
+
+    private byte[] readAllBytes(InputStream is) throws IOException {
+        java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        return buffer.toByteArray();
     }
 
     private void showLoading(boolean loading) {

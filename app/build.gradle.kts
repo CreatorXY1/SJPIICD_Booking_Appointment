@@ -50,6 +50,8 @@ dependencies {
     implementation("com.google.firebase:firebase-appcheck-debug:16.0.0")          // dev only
     implementation("com.google.firebase:firebase-appcheck-playintegrity:16.0.0") // release
     implementation("com.google.firebase:firebase-appcheck-debug")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.google.code.gson:gson:2.10.1")
 
 
     implementation(libs.appcompat)
