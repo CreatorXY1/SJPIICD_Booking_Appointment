@@ -32,6 +32,12 @@
         <activity android:name=".MainActivity" android:exported="false"/>
         <activity android:name=".AppointmentCapacityActivity" android:exported="false"/>
         <activity android:name=".EClearanceActivity" android:exported="false"/>
+        <activity android:name=".AdminManageClearanceActivity" android:exported="false"/>
+        <activity android:name=".AdminDashboardActivity" android:exported="false"/>
+        <activity android:name=".AuthChoiceActivity" android:exported="false"/>
+        <activity android:name=".AuthLoginActivity" android:exported="false"/>
+        <activity android:name=".AuthRegisterActivity" android:exported="false"/>
+        <activity android:name=".HomeActivity" android:exported="false"/>
     </application>
 
 </manifest>

@@ -1,59 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="#2C2C2E">
 
     <!-- Header -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#1976D2"
-        android:padding="20dp">
+        android:background="@drawable/header_gradient"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="24dp"
+        android:elevation="4dp">
 
         <TextView
             android:id="@+id/tvECTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="My e-Clearance"
-            android:textSize="20sp"
+            android:textSize="28sp"
             android:textColor="#FFFFFF"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:shadowColor="#00000066"
+            android:shadowRadius="2"
+            android:shadowDx="0"
+            android:shadowDy="2"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Track your clearance requirements"
+            android:textSize="14sp"
+            android:textColor="#E1BEE7"
+            android:layout_marginTop="4dp"/>
     </LinearLayout>
 
     <!-- Tabs -->
-    <LinearLayout
-        android:orientation="horizontal"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:background="#FFFFFF">
+        android:layout_margin="16dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="12dp"
+        app:cardBackgroundColor="#424242">
 
-        <Button
-            android:id="@+id/btnPrelim"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="44dp"
-            android:text="Prelim"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:background="#6A1B9A">
 
-        <Button
-            android:id="@+id/btnMidterm"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="44dp"
-            android:text="Midterm"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"/>
+            <Button
+                android:id="@+id/btnPrelim"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="44dp"
+                android:text="Prelim"
+                android:backgroundTint="#9C27B0"
+                android:textColor="#FFFFFF"/>
 
-        <Button
-            android:id="@+id/btnFinal"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="44dp"
-            android:text="Final"/>
-    </LinearLayout>
+            <Button
+                android:id="@+id/btnMidterm"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="44dp"
+                android:text="Midterm"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#7B1FA2"
+                android:textColor="#FFFFFF"/>
+
+            <Button
+                android:id="@+id/btnFinal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="44dp"
+                android:text="Final"
+                android:backgroundTint="#8E24AA"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <!-- Status lines -->
     <TextView
@@ -61,27 +93,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Not Cleared"
-        android:padding="12dp"
+        android:padding="16dp"
         android:visibility="visible"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
     <TextView
         android:id="@+id/tvMidtermStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Not Cleared"
-        android:padding="12dp"
+        android:padding="16dp"
         android:visibility="gone"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
     <TextView
         android:id="@+id/tvFinalStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Not Cleared"
-        android:padding="12dp"
+        android:padding="16dp"
         android:visibility="gone"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
     <ProgressBar
         android:id="@+id/progressBarEC"
@@ -89,15 +133,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:indeterminateTint="#9C27B0"/>
 
     <TextView
         android:id="@+id/tvECError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#D32F2F"
+        android:textColor="#FF5252"
         android:visibility="gone"
-        android:padding="12dp"/>
+        android:padding="16dp"
+        android:gravity="center"/>
 
     <ScrollView
         android:id="@+id/scrollEC"
@@ -111,7 +157,9 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
 
             <!-- Prelim layout -->
             <LinearLayout
@@ -140,20 +188,16 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <Button
+        android:id="@+id/btnRefreshEC"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="12dp">
-
-        <Button
-            android:id="@+id/btnRefreshEC"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:text="Refresh"
-            android:layout_gravity="end"
-            android:layout_marginEnd="12dp"/>
-
-    </LinearLayout>
+        android:layout_height="56dp"
+        android:text="Refresh"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#9C27B0"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="12dp"/>
 
 </LinearLayout>

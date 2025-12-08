@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/manageClearanceRoot"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2C2C2E">
+
+    <!-- Header -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/header_gradient"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="24dp"
+        android:elevation="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manage Clearances"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update student clearance status"
+            android:textSize="14sp"
+            android:textColor="#E1BEE7"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
+
+    <!-- Search Bar Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="12dp"
+        app:cardBackgroundColor="#424242">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:background="#6A1B9A"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/etManageSearch"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:hint="Search student name or email"
+                android:textColorHint="#E1BEE7"
+                android:textColor="#FFFFFF"
+                android:background="@android:drawable/editbox_background"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"/>
+
+            <Button
+                android:id="@+id/btnSearchManageClearance"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Search"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="#9C27B0"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <ProgressBar
+        android:id="@+id/progressBarManageClearance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:indeterminateTint="#9C27B0"
+        android:layout_marginTop="24dp"/>
+
+    <TextView
+        android:id="@+id/tvManageClearanceError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Error"
+        android:visibility="gone"
+        android:textColor="#FF5252"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:padding="16dp"/>
+
+    <ScrollView
+        android:id="@+id/scrollManageClearance"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/studentsContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="16dp"/>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnRefreshManageClearance"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Refresh"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#9C27B0"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="12dp"/>
+</LinearLayout>

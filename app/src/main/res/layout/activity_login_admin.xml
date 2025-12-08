@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:background="#2C2C2E">
 
     <LinearLayout
@@ -13,15 +13,21 @@
         android:padding="24dp"
         android:gravity="center">
 
-        <!-- Logo/Header Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Student Portal"
+            android:text="🔐"
+            android:textSize="80sp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin Login"
             android:textSize="32sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="40dp"
             android:layout_marginBottom="8dp"
             android:shadowColor="#00000066"
             android:shadowRadius="3"
@@ -31,40 +37,29 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Appointment Booking System"
+            android:text="System Administrator"
             android:textSize="14sp"
             android:textColor="#E1BEE7"
-            android:layout_marginBottom="48dp"/>
+            android:layout_marginBottom="32dp"/>
 
-        <!-- Login Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardElevation="8dp"
+            app:cardBackgroundColor="#424242"
             app:cardCornerRadius="16dp"
-            app:cardBackgroundColor="#424242">
+            app:cardElevation="8dp">
 
             <LinearLayout
                 android:orientation="vertical"
+                android:padding="24dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="24dp"
                 android:background="#3C3C3E">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sign In"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:layout_marginBottom="24dp"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email or Username"
+                    android:hint="Admin Email"
                     app:boxStrokeColor="#9C27B0"
                     app:hintTextColor="#BA68C8"
                     android:textColorHint="#9E9E9E"
@@ -78,7 +73,6 @@
                         android:textColor="#FFFFFF"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Password TextInputLayout: use modern endIconMode -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -109,8 +103,7 @@
                     android:layout_marginTop="24dp"
                     android:backgroundTint="#9C27B0"
                     android:textColor="#FFFFFF"
-                    app:cornerRadius="28dp"
-                    android:elevation="4dp"/>
+                    app:cornerRadius="28dp"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -123,7 +116,7 @@
                     android:id="@+id/btnRegister"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:text="Create Account"
+                    android:text="Create Admin Account"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="#BA68C8"
@@ -131,9 +124,7 @@
                     app:strokeWidth="2dp"
                     app:cornerRadius="28dp"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
-
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
     </LinearLayout>
 </ScrollView>

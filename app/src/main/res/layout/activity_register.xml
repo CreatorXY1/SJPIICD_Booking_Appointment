@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:background="#2C2C2E">
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:padding="24dp"
-        android:gravity="center">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <!-- Logo/Header Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Student Portal"
-            android:textSize="32sp"
+            android:text="Create Account"
+            android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
             android:layout_marginTop="40dp"
@@ -31,16 +29,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Appointment Booking System"
+            android:text="Fill in your details below"
             android:textSize="14sp"
             android:textColor="#E1BEE7"
-            android:layout_marginBottom="48dp"/>
+            android:layout_marginBottom="24dp"/>
 
-        <!-- Login Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             app:cardElevation="8dp"
             app:cardCornerRadius="16dp"
             app:cardBackgroundColor="#424242">
@@ -52,19 +48,27 @@
                 android:padding="24dp"
                 android:background="#3C3C3E">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sign In"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"
-                    android:layout_marginBottom="24dp"/>
+                    android:hint="Full name"
+                    app:boxStrokeColor="#9C27B0"
+                    app:hintTextColor="#BA68C8"
+                    android:textColorHint="#9E9E9E"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email or Username"
+                    android:hint="Email"
+                    android:layout_marginTop="12dp"
                     app:boxStrokeColor="#9C27B0"
                     app:hintTextColor="#BA68C8"
                     android:textColorHint="#9E9E9E"
@@ -78,12 +82,28 @@
                         android:textColor="#FFFFFF"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Password TextInputLayout: use modern endIconMode -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Username"
+                    android:layout_marginTop="12dp"
+                    app:boxStrokeColor="#9C27B0"
+                    app:hintTextColor="#BA68C8"
+                    android:textColorHint="#9E9E9E"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Password"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="12dp"
                     app:boxStrokeColor="#9C27B0"
                     app:hintTextColor="#BA68C8"
                     android:textColorHint="#9E9E9E"
@@ -99,25 +119,22 @@
                         android:textColor="#FFFFFF"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
-                    android:id="@+id/btnSignIn"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="Sign In"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="24dp"
-                    android:backgroundTint="#9C27B0"
-                    android:textColor="#FFFFFF"
-                    app:cornerRadius="28dp"
-                    android:elevation="4dp"/>
+                    android:layout_height="wrap_content"
+                    android:hint="Invite code (admin only)"
+                    android:layout_marginTop="12dp"
+                    app:boxStrokeColor="#9C27B0"
+                    app:hintTextColor="#BA68C8"
+                    android:textColorHint="#9E9E9E"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#616161"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="16dp"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etInvite"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
                     android:id="@+id/btnRegister"
@@ -126,11 +143,10 @@
                     android:text="Create Account"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#BA68C8"
-                    app:strokeColor="#9C27B0"
-                    app:strokeWidth="2dp"
-                    app:cornerRadius="28dp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+                    android:layout_marginTop="24dp"
+                    android:backgroundTint="#9C27B0"
+                    android:textColor="#FFFFFF"
+                    app:cornerRadius="28dp"/>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

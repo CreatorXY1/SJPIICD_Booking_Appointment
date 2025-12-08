@@ -36,14 +36,14 @@ public class DashboardActivity extends AppCompatActivity {
 
         cardBook.setOnClickListener(v -> startActivity(new Intent(this, BookingActivity.class)));
         cardMy.setOnClickListener(v -> startActivity(new Intent(this, MyAppointmentsActivity.class)));
-        cardEclearance.setOnClickListener(v -> startActivity(new Intent(this, EClearance.class)));
+        cardEclearance.setOnClickListener(v -> startActivity(new Intent(this, EClearanceActivity.class)));
 
         // NEW: open AppointmentCapacityActivity
         cardDailyCapacity.setOnClickListener(v -> startActivity(new Intent(this, AppointmentCapacityActivity.class)));
 
         btnSignOut.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-            Intent i = new Intent(this, LoginActivity.class);
+            Intent i = new Intent(this, AuthLoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
             finish();

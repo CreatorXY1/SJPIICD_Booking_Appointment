@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="#424242"
+    tools:context=".AdminManageClearanceActivity">
+
+    <LinearLayout
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#6A1B9A">
+
+        <TextView
+            android:id="@+id/tvStudentName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Student Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+
+        <TextView
+            android:id="@+id/tvStudentEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="student@email"
+            android:textSize="14sp"
+            android:textColor="#E1BEE7"
+            android:layout_marginTop="4dp"/>
+
+        <Button
+            android:id="@+id/btnEditClearance"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Edit Clearance"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="#9C27B0"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="24dp"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

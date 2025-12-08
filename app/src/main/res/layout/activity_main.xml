@@ -1,69 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#2C2C2E"
-    tools:context=".BookingActivity">
+    android:fillViewport="true"
+    tools:context=".MainActivity">
 
-    <!-- Header -->
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/header_gradient"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:paddingTop="48dp"
-        android:paddingBottom="24dp"
-        android:elevation="4dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Student Portal"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:shadowColor="#00000066"
-            android:shadowRadius="2"
-            android:shadowDx="0"
-            android:shadowDy="2"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Appointment Booking System"
-            android:textSize="14sp"
-            android:textColor="#E1BEE7"
-            android:layout_marginTop="4dp"/>
-    </LinearLayout>
-
-    <!-- Main Content -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
-
+        <!-- Header -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/header_gradient"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
-            android:paddingTop="16dp"
+            android:paddingTop="48dp"
             android:paddingBottom="24dp"
-            android:gravity="center">
+            android:elevation="4dp">
 
-            <!-- Welcome Card -->
+            <!-- Header Content with Login Button -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Student Portal"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:shadowColor="#00000066"
+                        android:shadowRadius="2"
+                        android:shadowDx="0"
+                        android:shadowDy="2"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SJPIICD Appointment System"
+                        android:textSize="14sp"
+                        android:textColor="#E1BEE7"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+
+                <!-- Login Button - Right aligned -->
+                <Button
+                    android:id="@+id/btnLoginTop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Login"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#FFFFFF"
+                    android:textColor="#6A1B9A"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:minHeight="40dp"
+                    app:cornerRadius="20dp"
+                    android:elevation="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Main Content -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="24dp">
+
+            <!-- Welcome Banner Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 app:cardElevation="8dp"
                 app:cardCornerRadius="16dp"
                 app:cardBackgroundColor="#424242">
@@ -72,7 +103,7 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="32dp"
+                    android:padding="24dp"
                     android:gravity="center"
                     android:background="@drawable/card_gradient">
 
@@ -80,14 +111,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🎓"
-                        android:textSize="64sp"
-                        android:layout_marginBottom="16dp"/>
+                        android:textSize="56sp"
+                        android:layout_marginBottom="12dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Welcome!"
-                        android:textSize="28sp"
+                        android:text="Welcome to SJPIICD!"
+                        android:textSize="24sp"
                         android:textStyle="bold"
                         android:textColor="#FFFFFF"
                         android:layout_marginBottom="8dp"/>
@@ -95,11 +126,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Book appointments with ease"
-                        android:textSize="16sp"
+                        android:text="Stay updated with school news and announcements"
+                        android:textSize="14sp"
                         android:textColor="#E0E0E0"
                         android:gravity="center"
-                        android:layout_marginBottom="24dp"/>
+                        android:layout_marginBottom="16dp"/>
 
                     <Button
                         android:id="@+id/btnGetStarted"
@@ -112,128 +143,484 @@
                         android:textColor="#FFFFFF"
                         app:cornerRadius="28dp"
                         android:elevation="4dp"/>
-
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Quick Info Cards -->
+            <!-- School News Section Header -->
             <LinearLayout
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp">
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp">
 
-                <!-- Info Card 1 -->
-                <androidx.cardview.widget.CardView
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="📰 School News and Updates"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"/>
+
+                <TextView
+                    android:id="@+id/tvSeeAllNews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="See All ›"
+                    android:textSize="14sp"
+                    android:textColor="#BA68C8"
+                    android:textStyle="bold"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
+            </LinearLayout>
+
+            <!-- Horizontal Scrolling News Cards -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:id="@+id/newsContainer"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="8dp">
+
+                    <!-- News Card 1 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="280dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        app:cardElevation="6dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="#424242">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#6A1B9A">
+
+                            <!-- News Image Placeholder -->
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="140dp"
+                                android:background="#8E24AA">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="📸"
+                                    android:textSize="48sp"
+                                    android:layout_gravity="center"/>
+
+                                <!-- News Badge -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="NEW"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:background="#FF5252"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingTop="4dp"
+                                    android:paddingBottom="4dp"
+                                    android:layout_margin="12dp"
+                                    android:layout_gravity="top|end"/>
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:id="@+id/tvNewsTitle1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Loading news..."
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:maxLines="2"
+                                    android:ellipsize="end"
+                                    android:layout_marginBottom="8dp"/>
+
+                                <TextView
+                                    android:id="@+id/tvNewsDate1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Today"
+                                    android:textSize="12sp"
+                                    android:textColor="#E1BEE7"
+                                    android:layout_marginBottom="8dp"/>
+
+                                <TextView
+                                    android:id="@+id/tvNewsPreview1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Stay tuned for exciting updates from SJPIICD..."
+                                    android:textSize="14sp"
+                                    android:textColor="#E0E0E0"
+                                    android:maxLines="3"
+                                    android:ellipsize="end"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- News Card 2 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="280dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        app:cardElevation="6dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="#424242">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#7B1FA2">
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="140dp"
+                                android:background="#9C27B0">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="🎉"
+                                    android:textSize="48sp"
+                                    android:layout_gravity="center"/>
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:id="@+id/tvNewsTitle2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Upcoming Events"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:maxLines="2"
+                                    android:ellipsize="end"
+                                    android:layout_marginBottom="8dp"/>
+
+                                <TextView
+                                    android:id="@+id/tvNewsDate2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="This Week"
+                                    android:textSize="12sp"
+                                    android:textColor="#E1BEE7"
+                                    android:layout_marginBottom="8dp"/>
+
+                                <TextView
+                                    android:id="@+id/tvNewsPreview2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Check out the exciting events happening this week..."
+                                    android:textSize="14sp"
+                                    android:textColor="#E0E0E0"
+                                    android:maxLines="3"
+                                    android:ellipsize="end"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- News Card 3 -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="280dp"
+                        android:layout_height="wrap_content"
+                        app:cardElevation="6dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="#424242">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#8E24AA">
+
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="140dp"
+                                android:background="#AB47BC">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="📚"
+                                    android:textSize="48sp"
+                                    android:layout_gravity="center"/>
+                            </FrameLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:id="@+id/tvNewsTitle3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Academic Updates"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FFFFFF"
+                                    android:maxLines="2"
+                                    android:ellipsize="end"
+                                    android:layout_marginBottom="8dp"/>
+
+                                <TextView
+                                    android:id="@+id/tvNewsDate3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Recent"
+                                    android:textSize="12sp"
+                                    android:textColor="#E1BEE7"
+                                    android:layout_marginBottom="8dp"/>
+
+                                <TextView
+                                    android:id="@+id/tvNewsPreview3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Important academic announcements and schedules..."
+                                    android:textSize="14sp"
+                                    android:textColor="#E0E0E0"
+                                    android:maxLines="3"
+                                    android:ellipsize="end"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Mission & Vision Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎯 Our Mission and Vision"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Mission Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    app:cardElevation="4dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardBackgroundColor="#424242">
+                    android:padding="20dp"
+                    android:background="#6A1B9A">
 
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
                         android:gravity="center_vertical"
-                        android:background="#6A1B9A">
+                        android:layout_marginBottom="12dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="✓"
-                            android:textSize="28sp"
-                            android:textColor="#E1BEE7"
-                            android:layout_marginEnd="16dp"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:text="Easy scheduling"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#FFFFFF"/>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Info Card 2 -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    app:cardElevation="4dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardBackgroundColor="#424242">
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:gravity="center_vertical"
-                        android:background="#7B1FA2">
+                            android:text="🎓"
+                            android:textSize="32sp"
+                            android:layout_marginEnd="12dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="✓"
-                            android:textSize="28sp"
-                            android:textColor="#E1BEE7"
-                            android:layout_marginEnd="16dp"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:text="Multiple payment options"
-                            android:textSize="16sp"
+                            android:text="Mission"
+                            android:textSize="20sp"
                             android:textStyle="bold"
                             android:textColor="#FFFFFF"/>
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
 
-                <!-- Info Card 3 -->
-                <androidx.cardview.widget.CardView
+                    <TextView
+                        android:id="@+id/tvMission"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="To provide quality education that empowers students to become responsible and productive members of society."
+                        android:textSize="15sp"
+                        android:textColor="#E0E0E0"
+                        android:lineSpacingExtra="4dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Vision Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardElevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#424242">
+
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardElevation="4dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardBackgroundColor="#424242">
+                    android:padding="20dp"
+                    android:background="#7B1FA2">
 
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
                         android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="👁️"
+                            android:textSize="32sp"
+                            android:layout_marginEnd="12dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Vision"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="#FFFFFF"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvVision"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="A leading institution known for academic excellence, innovation, and service to the community."
+                        android:textSize="15sp"
+                        android:textColor="#E0E0E0"
+                        android:lineSpacingExtra="4dp"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Quick Links Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚡ Quick Access"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Quick Links Grid -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
+                <!-- Book Appointment -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="120dp"
+                    android:layout_marginEnd="8dp"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    app:cardElevation="6dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#424242">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="16dp"
                         android:background="#8E24AA">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="✓"
-                            android:textSize="28sp"
-                            android:textColor="#E1BEE7"
-                            android:layout_marginEnd="16dp"/>
+                            android:text="📅"
+                            android:textSize="40sp"
+                            android:layout_marginBottom="8dp"/>
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Track your appointments"
-                            android:textSize="16sp"
+                            android:text="Book Now"
+                            android:textSize="14sp"
                             android:textStyle="bold"
-                            android:textColor="#FFFFFF"/>
+                            android:textColor="#FFFFFF"
+                            android:gravity="center"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
+                <!-- View Appointments -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="120dp"
+                    android:layout_marginStart="8dp"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    app:cardElevation="6dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#424242">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:padding="16dp"
+                        android:background="#9C27B0">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📋"
+                            android:textSize="40sp"
+                            android:layout_marginBottom="8dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="My Bookings"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="#FFFFFF"
+                            android:gravity="center"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2C2C2E"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎓"
+        android:textSize="80sp"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Student Portal"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign in as"
+        android:textSize="18sp"
+        android:textColor="#E1BEE7"
+        android:layout_marginBottom="48dp"/>
+
+    <!-- Student Login Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#424242">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:background="#6A1B9A">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👨‍🎓 Student"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Book appointments and check clearance"
+                android:textSize="14sp"
+                android:textColor="#E1BEE7"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnStudentLogin"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Sign in as Student"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="#9C27B0"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="28dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Admin Login Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="#424242">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:background="#7B1FA2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔐 Admin"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage system and clearances"
+                android:textSize="14sp"
+                android:textColor="#E1BEE7"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnAdminLogin"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Sign in as Admin"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="#9C27B0"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="28dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>
