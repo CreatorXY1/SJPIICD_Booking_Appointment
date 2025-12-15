@@ -43,7 +43,7 @@ public class DashboardActivity extends AppCompatActivity {
 
         btnSignOut.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-            Intent i = new Intent(this, AuthLoginActivity.class);
+            Intent i = new Intent(this, HomeActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
             finish();

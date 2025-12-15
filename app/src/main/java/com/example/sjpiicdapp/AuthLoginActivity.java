@@ -11,8 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.functions.FirebaseFunctions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthLoginActivity extends AppCompatActivity {
     private static final String TAG = "AuthLoginActivity";
@@ -33,7 +38,7 @@ public class AuthLoginActivity extends AppCompatActivity {
 
         btnSignIn.setOnClickListener(v -> {
             String identifier = etIdentifier.getText() == null ? "" : etIdentifier.getText().toString().trim();
-            String pw = etPassword.getText() == null ? "" : etPassword.getText().toString();
+            String pw = etPassword.getText() == null ? "" : etPassword.getText().toString().trim();
 
             if (identifier.isEmpty() || pw.isEmpty()) {
                 Toast.makeText(this, "Enter email/username and password", Toast.LENGTH_SHORT).show();
@@ -45,50 +50,29 @@ public class AuthLoginActivity extends AppCompatActivity {
                 // treat as email
                 signInWithEmail(identifier, pw, roleWanted);
             } else {
-                // treat as username -> lookup usernames/<usernameLower>
-                String usernameKey = identifier.toLowerCase();
-                FirebaseFirestore.getInstance().collection("usernames").document(usernameKey)
+                // treat as username -> use callable function
+                // Direct Firestore lookup instead of functions (usernames are public-read per your rules)
+                FirebaseFirestore.getInstance().collection("usernames").document(identifier)
                         .get()
                         .addOnSuccessListener(doc -> {
                             if (!doc.exists()) {
-                                Toast.makeText(this, "Username not found", Toast.LENGTH_LONG).show();
+                                Toast.makeText(this, "Could not find that username.", Toast.LENGTH_LONG).show();
                                 return;
                             }
-                            String uid = doc.getString("uid");
-                            if (uid == null) {
-                                Toast.makeText(this, "Username record corrupted. Contact admin.", Toast.LENGTH_LONG).show();
-                                return;
+                            String email = doc.getString("email");
+                            if (email != null && !email.isEmpty()) {
+                                signInWithEmail(email, pw, roleWanted);
+                            } else {
+                                // defensive: some older username docs may not have email yet
+                                Toast.makeText(this, "Username exists but no email associated. Contact admin.", Toast.LENGTH_LONG).show();
                             }
-                            // get users/{uid} to obtain email and role
-                            FirebaseFirestore.getInstance().collection("users").document(uid)
-                                    .get()
-                                    .addOnSuccessListener(userDoc -> {
-                                        if (!userDoc.exists()) {
-                                            Toast.makeText(this, "User profile not found. Contact admin.", Toast.LENGTH_LONG).show();
-                                            return;
-                                        }
-                                        String email = userDoc.getString("email");
-                                        String docRole = userDoc.getString("role");
-                                        if (roleWanted != null && !roleWanted.equals(docRole)) {
-                                            Toast.makeText(this, "Account does not have that role.", Toast.LENGTH_LONG).show();
-                                            return;
-                                        }
-                                        if (email == null || email.isEmpty()) {
-                                            Toast.makeText(this, "No email associated with this username.", Toast.LENGTH_LONG).show();
-                                            return;
-                                        }
-                                        // finally sign in with the resolved email
-                                        signInWithEmail(email, pw, roleWanted);
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Log.e(TAG, "Failed reading user doc for uid:" + uid, e);
-                                        Toast.makeText(this, "Failed to resolve user. Try again.", Toast.LENGTH_LONG).show();
-                                    });
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "Failed querying usernames/" + usernameKey, e);
-                            Toast.makeText(this, "Lookup failed. Try again.", Toast.LENGTH_LONG).show();
+                            Log.e(TAG, "username lookup failed", e);
+                            Toast.makeText(this, "Error looking up username: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         });
+
+
             }
         });
 
@@ -133,10 +117,17 @@ public class AuthLoginActivity extends AppCompatActivity {
                             });
                 })
                 .addOnFailureListener(e -> {
-                    String msg = e.getMessage() != null ? e.getMessage() : "Sign in failed";
-                    Toast.makeText(this, "Sign in failed: " + msg, Toast.LENGTH_LONG).show();
                     Log.e(TAG, "signIn failed", e);
+                    Log.e(TAG, "signIn error class: " + e.getClass().getName() + " message: " + e.getMessage());
+                    if (e instanceof com.google.firebase.auth.FirebaseAuthInvalidCredentialsException) {
+                        Log.e(TAG, "Invalid credentials (check password).");
+                    }
+                    if (e instanceof com.google.firebase.auth.FirebaseAuthException) {
+                        Log.e(TAG, "auth code: " + ((com.google.firebase.auth.FirebaseAuthException)e).getErrorCode());
+                    }
+                    Toast.makeText(this, "Sign in failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+
     }
 
     // small utility: return id if R.id.name exists otherwise fallbackId

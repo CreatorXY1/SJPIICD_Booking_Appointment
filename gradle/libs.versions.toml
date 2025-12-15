@@ -1,30 +1,56 @@
+# File: gradle/libs.versions.toml
 [versions]
-agp = "8.13.1"
+# Version for Android Gradle Plugin
+agp = "8.13.2"
+
+# Versions for local testing
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
+
+# Versions for AndroidX and Material libraries
 appcompat = "1.6.1"
 material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
-firebaseAuth = "24.0.1"
-firebaseFirestore = "26.0.2"
-firebaseStorage = "22.0.1"
-firebaseFunctions = "22.1.0"
+
+# Versions for other third-party libraries
+okhttp = "4.12.0"
+gson = "2.11.0"
+
+# Version for the Firebase Bill of Materials (BOM)
+firebaseBom = "34.6.0"
+firebaseDatabase = "22.0.1"
 
 [libraries]
+# Local testing libraries
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+# AndroidX and Material libraries
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
-firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
-firebase-functions = { group = "com.google.firebase", name = "firebase-functions", version.ref = "firebaseFunctions" }
+
+# Third-party libraries
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+# --- Corrected Firebase Libraries ---
+# Define the BOM itself. This is the central controller for all Firebase versions.
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+
+# Define other Firebase libraries WITHOUT version numbers. The BOM will provide them.
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+firebase-functions = { group = "com.google.firebase", name = "firebase-functions" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-appcheck-debug = { group = "com.google.firebase", name = "firebase-appcheck-debug" }
+firebase-appcheck-playintegrity = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-

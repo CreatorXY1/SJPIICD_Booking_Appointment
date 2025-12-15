@@ -7,27 +7,19 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Transaction;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -35,63 +27,63 @@ import java.util.Map;
 
 public class BookingActivity extends AppCompatActivity {
     private static final String TAG = "BookingActivity";
-    private static final long MAX_SLOT_CAPACITY = 400L;
-    private Button btnPickDate, btnConfirm;
+
+    private TextView tvWelcomeBooking;
+    private Button btnPickDate;
+    private Button btnConfirm;
     private Spinner spinnerWindows;
+
     private FirebaseFirestore db;
+    private FirebaseFunctions functions;
+    private FirebaseAuth auth;
+
     private String selectedDate;
     private String selectedWindow;
-    private int selectedPaymentMethodIndex = 0; // 0 ewallet, 1 school
-
-    private RadioGroup rgPayment;
-    private RadioButton rbEWALLET, rbSCHOOL;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate start");
 
-        // AUTH check BEFORE inflating UI (you already had this but keep it strict)
-        FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance();
+
+        // Require auth before inflating UI
+        FirebaseUser u = auth.getCurrentUser();
         if (u == null) {
-            Log.i("AuthDebug", "No current user (null) - redirecting to LoginActivity");
             Toast.makeText(this, "Please sign in to continue", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, AuthLoginActivity.class));
             finish();
             return;
-        } else {
-            Log.i("AuthDebug", "Signed in user: uid=" + u.getUid() + " email=" + u.getEmail());
         }
 
         setContentView(R.layout.activity_booking);
-        Log.i(TAG, "setContentView done");
 
+        // Initialize Firebase services
         db = FirebaseFirestore.getInstance();
+        functions = FirebaseFunctions.getInstance();
+
+        tvWelcomeBooking = findViewById(R.id.tvWelcomeBooking);
         btnPickDate = findViewById(R.id.btnPickDate);
-        spinnerWindows = findViewById(R.id.spinnerWindows);
         btnConfirm = findViewById(R.id.btnConfirmBooking);
-        rgPayment = findViewById(R.id.rgPayment);
-        rbEWALLET = findViewById(R.id.rbEWALLET);
-        rbSCHOOL = findViewById(R.id.rbSCHOOL);
+        spinnerWindows = findViewById(R.id.spinnerWindows);
 
-// default to e-wallet if you want
-        if (rbEWALLET != null) rbEWALLET.setChecked(true);
-
+        // Show welcome
+        String nameOrEmail = (u.getDisplayName() != null && !u.getDisplayName().isEmpty())
+                ? u.getDisplayName()
+                : u.getEmail();
+        tvWelcomeBooking.setText("Welcome, " + (nameOrEmail != null ? nameOrEmail : "Student"));
 
         loadWindows();
 
         btnPickDate.setOnClickListener(v -> showDatePicker());
-
-        btnConfirm.setOnClickListener(v -> {
-            Log.i(TAG, "Confirm clicked");
-            attemptBooking();
-        });
+        btnConfirm.setOnClickListener(v -> attemptBooking());
     }
 
     private void loadWindows() {
-        java.util.List<String> windows = Arrays.asList("09:00-10:00","10:00-11:00","11:00-12:00","13:00-14:00");
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, windows);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"09:00-10:00", "10:00-11:00", "11:00-12:00", "13:00-14:00", "14:00-15:00"});
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerWindows.setAdapter(adapter);
     }
@@ -99,7 +91,7 @@ public class BookingActivity extends AppCompatActivity {
     private void showDatePicker() {
         Calendar c = Calendar.getInstance();
         DatePickerDialog dp = new DatePickerDialog(this,
-                (view, year, month, dayOfMonth) -> {
+                (DatePicker view, int year, int month, int dayOfMonth) -> {
                     Calendar chosen = Calendar.getInstance();
                     chosen.set(year, month, dayOfMonth);
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -110,238 +102,140 @@ public class BookingActivity extends AppCompatActivity {
         dp.show();
     }
 
-    // SAFE attemptBooking with auth check, UI locking, and transaction handling
     private void attemptBooking() {
         Log.i(TAG, "attemptBooking start: selectedDate=" + selectedDate + " selectedWindow=" + spinnerWindows.getSelectedItem());
 
+        // Basic validation
         if (selectedDate == null || selectedDate.isEmpty()) {
             Toast.makeText(this, "Pick a date first", Toast.LENGTH_SHORT).show();
             return;
         }
         selectedWindow = (String) spinnerWindows.getSelectedItem();
-        if (selectedWindow == null) {
+        if (selectedWindow == null || selectedWindow.isEmpty()) {
             Toast.makeText(this, "Choose a time window", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser == null) {
             Toast.makeText(this, "You must sign in before booking", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, AuthLoginActivity.class));
+            finish();
             return;
         }
         final String uid = currentUser.getUid();
 
-        // Prevent double clicks while pre-flight check runs
+        // Disable UI while checking
         btnConfirm.setEnabled(false);
         btnConfirm.setText("Checking...");
 
-        // 1) Pre-flight: check if user already has an appointment with the same date
+        // Refresh the auth token before proceeding
+        currentUser.getIdToken(true)
+                .addOnSuccessListener(getTokenResult -> {
+                    Log.i(TAG, "Token refreshed successfully");
+                    // Now proceed with duplicate check
+                    performDuplicateCheck(uid);
+                })
+                .addOnFailureListener(e -> {
+                    btnConfirm.setEnabled(true);
+                    btnConfirm.setText("Confirm Booking");
+                    Log.e(TAG, "Failed to refresh token", e);
+                    Toast.makeText(BookingActivity.this, "Authentication error. Please sign in again.", Toast.LENGTH_LONG).show();
+
+                    // Sign out and redirect to login
+                    auth.signOut();
+                    startActivity(new Intent(this, AuthLoginActivity.class));
+                    finish();
+                });
+    }
+
+    private void performDuplicateCheck(String uid) {
+        // Pre-flight duplicate check
         db.collection("appointments")
                 .whereEqualTo("userId", uid)
                 .whereEqualTo("date", selectedDate)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
-                        // User already has an appointment on this date -> block
+                    boolean foundNonRejected = false;
+                    boolean foundSameSlotNonRejected = false;
+
+                    for (com.google.firebase.firestore.DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        String status = doc.contains("status") ? doc.getString("status") : null;
+                        String window = doc.contains("window") ? doc.getString("window") : null;
+
+                        boolean isRejected = "REJECTED".equalsIgnoreCase(status);
+
+                        if (!isRejected) {
+                            foundNonRejected = true;
+                        }
+
+                        if (!isRejected && window != null && window.equals(selectedWindow)) {
+                            foundSameSlotNonRejected = true;
+                        }
+                    }
+
+                    if (foundSameSlotNonRejected) {
                         btnConfirm.setEnabled(true);
                         btnConfirm.setText("Confirm Booking");
-                        Toast.makeText(BookingActivity.this,
-                                "You already have an appointment on " + selectedDate + ". Please reschedule or choose another date.",
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "You already have an appointment for this exact time slot.", Toast.LENGTH_LONG).show();
                         return;
                     }
 
-                    // 2) No duplicate found: proceed with normal booking transaction
-                    btnConfirm.setText("Booking...");
-                    final String slotDocId = selectedDate + "_" + selectedWindow; // e.g., 2025-11-20_09:00-10:00
-                    final DocumentReference slotRef = db.collection("slots").document(slotDocId);
-                    final CollectionReference appointments = db.collection("appointments");
-
-                    final Map<String, Object> appointmentData = new HashMap<>();
-                    appointmentData.put("userId", uid);
-                    appointmentData.put("date", selectedDate);
-                    appointmentData.put("window", selectedWindow);
-                    appointmentData.put("status", "PENDING");
-
-                    // Determine payment method from UI
-                    String paymentMethod = "E_WALLET"; // default
-                    if (rgPayment != null) {
-                        int checked = rgPayment.getCheckedRadioButtonId();
-                        if (checked == R.id.rbSCHOOL) {
-                            paymentMethod = "PAY_AT_SCHOOL";
-                        }
+                    if (foundNonRejected) {
+                        btnConfirm.setEnabled(true);
+                        btnConfirm.setText("Confirm Booking");
+                        Toast.makeText(this, "You already have an appointment on " + selectedDate + ". Please reschedule or choose another date.", Toast.LENGTH_LONG).show();
+                        return;
                     }
-                    appointmentData.put("paymentMethod", paymentMethod);
-                    appointmentData.put("createdAt", FieldValue.serverTimestamp());
 
-                    // run transaction (same as your existing transaction)
-                    db.runTransaction((Transaction.Function<String>) transaction -> {
-                        DocumentSnapshot slotSnap = transaction.get(slotRef);
-
-                        boolean slotExists = slotSnap.exists();
-                        long bookedCount = 0L;
-                        long capacity = 400L; // <- use your max capacity here
-
-                        if (slotExists) {
-                            Long bc = slotSnap.getLong("bookedCount");
-                            Long cap = slotSnap.getLong("capacity");
-                            if (bc != null) bookedCount = bc;
-                            if (cap != null) capacity = cap;
-                        } else {
-                            bookedCount = 0L;
-                            capacity = 400L;
-                        }
-
-                        // business rule check
-                        if (bookedCount >= capacity) {
-                            throw new FirebaseFirestoreException("SLOT_FULL", FirebaseFirestoreException.Code.ABORTED);
-                        }
-
-                        // WRITES
-                        DocumentReference newApptRef = appointments.document();
-                        transaction.set(newApptRef, appointmentData);
-
-                        Map<String, Object> slotData = new HashMap<>();
-                        slotData.put("date", selectedDate);
-                        slotData.put("window", selectedWindow);
-                        slotData.put("capacity", capacity);
-                        slotData.put("bookedCount", bookedCount + 1);
-
-                        if (!slotExists) {
-                            transaction.set(slotRef, slotData);
-                        } else {
-                            transaction.update(slotRef, slotData);
-                        }
-
-                        return newApptRef.getId();
-                    }).addOnSuccessListener(appointmentId -> {
-                        Log.i(TAG, "Booking successful: id=" + appointmentId);
-                        Toast.makeText(BookingActivity.this, "Booked! id=" + appointmentId, Toast.LENGTH_LONG).show();
-
-                        btnConfirm.setEnabled(true);
-                        btnConfirm.setText("Confirm Booking");
-
-                        Intent i = new Intent(BookingActivity.this, DashboardActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        startActivity(i);
-                        finish();
-                    }).addOnFailureListener(e -> {
-                        btnConfirm.setEnabled(true);
-                        btnConfirm.setText("Confirm Booking");
-
-                        if (e instanceof FirebaseFirestoreException &&
-                                ((FirebaseFirestoreException) e).getCode() == FirebaseFirestoreException.Code.ABORTED) {
-                            Toast.makeText(BookingActivity.this, "Selected slot is full. Pick another.", Toast.LENGTH_LONG).show();
-                            Log.i(TAG, "Booking aborted: slot full.");
-                        } else {
-                            String msg = e.getMessage() != null ? e.getMessage() : e.toString();
-                            Toast.makeText(BookingActivity.this, "Booking failed: " + msg, Toast.LENGTH_LONG).show();
-                            Log.e(TAG, "Booking failed", e);
-                        }
-                    });
+                    // No conflicting appointment found - call backend function
+                    callCreateAppointment(selectedDate, selectedWindow);
                 })
                 .addOnFailureListener(e -> {
                     btnConfirm.setEnabled(true);
                     btnConfirm.setText("Confirm Booking");
-                    Toast.makeText(BookingActivity.this, "Failed to check existing appointments: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     Log.e(TAG, "Pre-flight duplicate check failed", e);
+                    Toast.makeText(BookingActivity.this, "Failed to check existing appointments: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 
+    private void callCreateAppointment(String date, String timeWindow) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("date", date);
+        payload.put("window", timeWindow);
 
-
-    private void proceedBookingTransaction(String uid, String selectedDate, String selectedWindow, String paymentMethod) {
-        final String slotDocId = selectedDate + "_" + selectedWindow; // e.g., 2025-11-20_09:00-10:00
-        final DocumentReference slotRef = db.collection("slots").document(slotDocId);
-
-        // Use a deterministic appointment id to prevent duplicate per-user-slot
-        final String apptDeterministicId = uid + "_" + slotDocId;
-        final DocumentReference apptRef = db.collection("appointments").document(apptDeterministicId);
-
-        final long MAX_CAPACITY = 400L; // your maximum
-        final Map<String, Object> appointmentData = new HashMap<>();
-        appointmentData.put("userId", uid);
-        appointmentData.put("date", selectedDate);
-        appointmentData.put("window", selectedWindow);
-        appointmentData.put("status", "PENDING");
-        appointmentData.put("paymentMethod", paymentMethod);
-        appointmentData.put("createdAt", FieldValue.serverTimestamp());
-
-        // runTransaction - reads first, then writes
-        db.runTransaction((Transaction.Function<String>) transaction -> {
-            // READS first
-            com.google.firebase.firestore.DocumentSnapshot apptSnap = transaction.get(apptRef);
-            com.google.firebase.firestore.DocumentSnapshot slotSnap = transaction.get(slotRef);
-
-            // If appointment document already exists (race or pre-existing), abort
-            if (apptSnap.exists()) {
-                throw new FirebaseFirestoreException("DUPLICATE_APPOINTMENT", FirebaseFirestoreException.Code.ABORTED);
-            }
-
-            // Slot counts
-            boolean slotExists = slotSnap.exists();
-            long bookedCount = 0L;
-            long capacity = MAX_CAPACITY;
-            if (slotExists) {
-                Long bc = slotSnap.getLong("bookedCount");
-                Long cap = slotSnap.getLong("capacity");
-                if (bc != null) bookedCount = bc;
-                if (cap != null) capacity = cap;
-            }
-
-            if (bookedCount >= capacity) {
-                // slot full
-                throw new FirebaseFirestoreException("SLOT_FULL", FirebaseFirestoreException.Code.ABORTED);
-            }
-
-            // WRITES (only after all reads)
-            transaction.set(apptRef, appointmentData);
-
-            Map<String, Object> slotData = new HashMap<>();
-            slotData.put("date", selectedDate);
-            slotData.put("window", selectedWindow);
-            slotData.put("capacity", capacity);
-            slotData.put("bookedCount", bookedCount + 1);
-
-            if (!slotExists) transaction.set(slotRef, slotData);
-            else transaction.update(slotRef, slotData);
-
-            return apptRef.getId();
-        }).addOnSuccessListener(appointmentId -> {
-            Log.i(TAG, "Booking successful: id=" + appointmentId);
-            Toast.makeText(this, "Booked! id=" + appointmentId, Toast.LENGTH_LONG).show();
-
-            btnConfirm.setEnabled(true);
-            btnConfirm.setText("Confirm Booking");
-
-            Intent i = new Intent(BookingActivity.this, MyAppointmentsActivity.class);
-            i.putExtra("appointmentId", appointmentId);
-            startActivity(i);
-            finish();
-        }).addOnFailureListener(e -> {
-            btnConfirm.setEnabled(true);
-            btnConfirm.setText("Confirm Booking");
-
-            if (e instanceof FirebaseFirestoreException) {
-                FirebaseFirestoreException fe = (FirebaseFirestoreException) e;
-                if (fe.getCode() == FirebaseFirestoreException.Code.ABORTED) {
-                    String msg = fe.getMessage() != null ? fe.getMessage() : "";
-                    if (msg.equals("SLOT_FULL")) {
-                        Toast.makeText(this, "Selected slot is full. Pick another.", Toast.LENGTH_LONG).show();
-                        return;
-                    } else if (msg.equals("DUPLICATE_APPOINTMENT")) {
-                        Toast.makeText(this, "You already have an appointment for this slot.", Toast.LENGTH_LONG).show();
-                        return;
+        functions.getHttpsCallable("createAppointment")
+                .call(payload)
+                .addOnSuccessListener((HttpsCallableResult result) -> {
+                    String apptId = null;
+                    Object data = result.getData();
+                    if (data instanceof Map) {
+                        Object id = ((Map) data).get("appointmentId");
+                        if (id != null) apptId = id.toString();
                     }
-                }
-            }
 
-            String msg = e.getMessage() != null ? e.getMessage() : e.toString();
-            Toast.makeText(this, "Booking failed: " + msg, Toast.LENGTH_LONG).show();
-            Log.e(TAG, "Booking failed", e);
-        });
+                    btnConfirm.setEnabled(true);
+                    btnConfirm.setText("Confirm Booking");
+                    Toast.makeText(this, "Booked successfully! ID: " + (apptId != null ? apptId : "unknown"), Toast.LENGTH_LONG).show();
+
+                    Intent i = new Intent(this, MyAppointmentsActivity.class);
+                    if (apptId != null) i.putExtra("appointmentId", apptId);
+                    startActivity(i);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    btnConfirm.setEnabled(true);
+                    btnConfirm.setText("Confirm Booking");
+                    Log.e(TAG, "createAppointment failed", e);
+
+                    if (e instanceof com.google.firebase.functions.FirebaseFunctionsException) {
+                        com.google.firebase.functions.FirebaseFunctionsException ffe = (com.google.firebase.functions.FirebaseFunctionsException) e;
+                        Log.e(TAG, "Functions error code: " + ffe.getCode());
+                        Log.e(TAG, "Functions error message: " + ffe.getMessage());
+                        Toast.makeText(this, "Booking failed: " + ffe.getCode().name(), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "Booking failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
-
-
 }

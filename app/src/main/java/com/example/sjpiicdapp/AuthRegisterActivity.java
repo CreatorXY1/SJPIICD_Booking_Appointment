@@ -115,7 +115,7 @@ public class AuthRegisterActivity extends AppCompatActivity {
 
                     // If student and username required -> reserve username with Firestore transaction
                     if (!adminFlow && !TextUtils.isEmpty(username)) {
-                        reserveUsernameTx(username, uid, () -> writeUserDocAndFinish(uid, name, email, role, username),
+                        reserveUsernameTx(username, uid, email, () -> writeUserDocAndFinish(uid, name, email, role, username),
                                 e -> handleFailureCleanup(uid, username, e));
                     } else {
                         // admin or no username: just write user doc
@@ -133,8 +133,8 @@ public class AuthRegisterActivity extends AppCompatActivity {
     }
 
     // Reserve username using a transaction on collection "usernames"
-    // Document id = username. If it exists -> fail. Otherwise set { uid, createdAt }.
-    private void reserveUsernameTx(final String username, final String uid, final Runnable onSuccess, final com.google.android.gms.tasks.OnFailureListener onFailure) {
+// Document id = username. If it exists -> fail. Otherwise set { uid, email, createdAt }.
+    private void reserveUsernameTx(final String username, final String uid, final String email, final Runnable onSuccess, final com.google.android.gms.tasks.OnFailureListener onFailure) {
         final String docId = username;
         final com.google.firebase.firestore.DocumentReference ref = db.collection("usernames").document(docId);
 
@@ -145,6 +145,7 @@ public class AuthRegisterActivity extends AppCompatActivity {
             }
             Map<String, Object> payload = new HashMap<>();
             payload.put("uid", uid);
+            payload.put("email", email);        // <- new: store email so clients can look it up
             payload.put("createdAt", Timestamp.now());
             transaction.set(ref, payload);
             return null;
@@ -157,6 +158,7 @@ public class AuthRegisterActivity extends AppCompatActivity {
         });
     }
 
+
     // Release username - used on cleanup (best-effort)
     private void releaseUsername(String username) {
         if (TextUtils.isEmpty(username)) return;
@@ -167,14 +169,17 @@ public class AuthRegisterActivity extends AppCompatActivity {
     }
 
     // Write user profile doc, then sign out so user must explicitly log in
+    // Write user profile doc, then sign out so user must explicitly log in
     private void writeUserDocAndFinish(final String uid, final String name, final String email, final String role, final String username) {
         Map<String, Object> u = new HashMap<>();
+        u.put("uid", uid); // helpful to store uid as well
         u.put("name", name);
         u.put("email", email);
         u.put("role", role);
         if (!TextUtils.isEmpty(username)) u.put("username", username);
         u.put("createdAt", Timestamp.now());
 
+        // <-- FIXED: write to "users" collection, NOT "usernames"
         db.collection("users").document(uid)
                 .set(u)
                 .addOnSuccessListener(aVoid -> {
@@ -198,6 +203,7 @@ public class AuthRegisterActivity extends AppCompatActivity {
                     attemptDeleteAuthUser(uid, e);
                 });
     }
+
 
     // Attempt to delete the created auth user (must be signed in as that user)
     private void attemptDeleteAuthUser(final String uid, final Exception original) {

@@ -3,7 +3,6 @@ plugins {
     id("com.google.gms.google-services") version "4.4.4"
 }
 
-
 android {
     namespace = "com.example.sjpiicdapp"
     compileSdk = 36
@@ -16,6 +15,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -33,36 +33,39 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    // If you're using Kotlin, enable this (remove if not)
-    // kotlinOptions { jvmTarget = "11" }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
-    // BOM ensures consistent versions for firebase libs
-    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+    // MultiDex support
+    implementation("androidx.multidex:multidex:2.0.1")
 
-    // Prefer KTX variants if you're writing modern code
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-storage")
-    implementation("com.google.firebase:firebase-functions")
-    implementation("com.google.firebase:firebase-appcheck-debug:16.0.0")          // dev only
-    implementation("com.google.firebase:firebase-appcheck-playintegrity:16.0.0") // release
-    implementation("com.google.firebase:firebase-appcheck-debug")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("com.google.code.gson:gson:2.10.1")
+    // Firebase BOM (Bill of Materials) - controls all Firebase versions
+    implementation(platform(libs.firebase.bom))
 
+    // Firebase dependencies (versions managed by BOM)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.functions)
+    implementation(libs.firebase.appcheck.debug)
+    implementation(libs.firebase.appcheck.playintegrity)
 
+    // AndroidX libraries
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.storage)
-    implementation(libs.firebase.functions)
 
+    // Third-party libraries
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    implementation(libs.firebase.database)
+
+    // Testing libraries
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

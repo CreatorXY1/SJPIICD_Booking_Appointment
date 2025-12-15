@@ -1,26 +1,20 @@
-﻿{
-    "emulators":  {
-                      "auth":  {
-                                   "port":  9099
-                               },
-                      "firestore":  {
-                                        "port":  8085
-                                    },
-                      "functions":  {
-                                        "port":  5001
-                                    },
-                      "storage":  {
-                                      "port":  9199
-                                  },
-                      "ui":  {
-                                 "enabled":  true,
-                                 "port":  4000
-                             }
-                  },
-    "functions":  {
-                      "source":  "functions"
-                  },
-    "storage":  {
-                    "rules":  "storage.rules"
-                }
+{
+  "functions": {
+    "source": "sjpiicd_cloudbase_functions"
+},
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  }
 }

@@ -69,54 +69,15 @@ public class MyAppointmentsActivity extends AppCompatActivity {
         }
 
         String apptId = apptDoc.getId();
-        String date = apptDoc.contains("date") ? apptDoc.getString("date") : null;
-        String window = apptDoc.contains("window") ? apptDoc.getString("window") : null;
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference apptsRef = db.collection("appointments");
-
-        // If date/window missing, simply delete the appointment doc (fallback).
-        if (date == null || window == null) {
-            apptsRef.document(apptId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> onSuccess.run())
-                    .addOnFailureListener(onFailure::accept);
-            return;
-        }
-
-        String slotId = date + "_" + window;
-        DocumentReference slotRef = db.collection("slots").document(slotId);
         DocumentReference apptRef = apptsRef.document(apptId);
 
-        db.runTransaction((Transaction.Function<Void>) transaction -> {
-            // Ensure appointment still exists
-            DocumentSnapshot currentAppt = transaction.get(apptRef);
-            if (!currentAppt.exists()) {
-                // Nothing to delete (already deleted)
-                return null;
-            }
-
-            // Decrement slot bookedCount if slot exists
-            DocumentSnapshot slotSnap = transaction.get(slotRef);
-            if (slotSnap.exists()) {
-                Long bookedCount = slotSnap.getLong("bookedCount");
-                if (bookedCount == null) bookedCount = 0L;
-                long newCount = Math.max(0L, bookedCount - 1L);
-                Map<String, Object> slotUpdates = new HashMap<>();
-                slotUpdates.put("bookedCount", newCount);
-                // If you want to remove the slot doc when both bookedCount==0 and it's newly created, you could,
-                // but safer to just set bookedCount to 0.
-                transaction.update(slotRef, slotUpdates);
-            }
-            // Delete appointment doc
-            transaction.delete(apptRef);
-
-            return null;
-        }).addOnSuccessListener(aVoid -> {
-            onSuccess.run();
-        }).addOnFailureListener(e -> {
-            onFailure.accept((Exception)e);
-        });
+        // The onAppointmentDeleted cloud function will handle decrementing the slot.
+        // We just need to delete the appointment document.
+        apptRef.delete()
+                .addOnSuccessListener(aVoid -> onSuccess.run())
+                .addOnFailureListener(onFailure::accept);
     }
 
     private void rescheduleAppointmentTransaction(
@@ -152,7 +113,6 @@ public class MyAppointmentsActivity extends AppCompatActivity {
         }
 
         final DocumentReference apptRef = db.collection("appointments").document(apptId);
-        final DocumentReference oldSlotRef = db.collection("slots").document(oldSlotId);
         final DocumentReference newSlotRef = db.collection("slots").document(newSlotId);
 
         final long MAX_CAPACITY = 400L;
@@ -160,24 +120,12 @@ public class MyAppointmentsActivity extends AppCompatActivity {
         db.runTransaction((Transaction.Function<Void>) transaction -> {
             // ---- 1) ALL READS FIRST (important) ----
             com.google.firebase.firestore.DocumentSnapshot freshAppt = transaction.get(apptRef);
-            com.google.firebase.firestore.DocumentSnapshot oldSlotSnap = transaction.get(oldSlotRef);
             com.google.firebase.firestore.DocumentSnapshot newSlotSnap = transaction.get(newSlotRef);
 
             // Validate appointment still exists
             if (!freshAppt.exists()) {
                 // Abort transaction with readable code
                 throw new FirebaseFirestoreException("APPOINTMENT_MISSING", FirebaseFirestoreException.Code.ABORTED);
-            }
-
-            // Extract old slot counts
-            long oldBooked = 0L;
-            long oldCapacity = MAX_CAPACITY;
-            boolean oldExists = oldSlotSnap.exists();
-            if (oldExists) {
-                Long ob = oldSlotSnap.getLong("bookedCount");
-                Long oc = oldSlotSnap.getLong("capacity");
-                if (ob != null) oldBooked = ob;
-                if (oc != null) oldCapacity = oc;
             }
 
             // Extract new slot counts
@@ -198,34 +146,12 @@ public class MyAppointmentsActivity extends AppCompatActivity {
             }
 
             // ---- 3) ALL WRITES AFTER ALL READS ----
-            // Update appointment doc
+            // Update appointment doc. The onAppointmentUpdated cloud function will handle slot changes.
             Map<String, Object> apptUpdates = new HashMap<>();
             apptUpdates.put("date", newDate);
             apptUpdates.put("window", newWindow);
             apptUpdates.put("updatedAt", FieldValue.serverTimestamp());
             transaction.update(apptRef, apptUpdates);
-
-            // Decrement old slot bookedCount (if it exists)
-            if (oldExists) {
-                long newOldBooked = Math.max(0L, oldBooked - 1L);
-                Map<String, Object> oldSlotUpdates = new HashMap<>();
-                oldSlotUpdates.put("bookedCount", newOldBooked);
-                transaction.update(oldSlotRef, oldSlotUpdates);
-            }
-
-            // Increment or create new slot doc with bookedCount + 1
-            long newNewBooked = newBooked + 1L;
-            Map<String, Object> newSlotData = new HashMap<>();
-            newSlotData.put("date", newDate);
-            newSlotData.put("window", newWindow);
-            newSlotData.put("capacity", newCapacity);
-            newSlotData.put("bookedCount", newNewBooked);
-
-            if (!newExists) {
-                transaction.set(newSlotRef, newSlotData);
-            } else {
-                transaction.update(newSlotRef, newSlotData);
-            }
 
             return null;
         }).addOnSuccessListener(aVoid -> {
@@ -385,17 +311,23 @@ public class MyAppointmentsActivity extends AppCompatActivity {
             final String docId = doc.getId();
 
             // populate fields
-            String date = doc.contains("date") ? doc.getString("date") : "Unknown date";
-            String window = doc.contains("window") ? doc.getString("window") : "Unknown window";
+            String date = doc.contains("date") ? doc.getString("date") : null;
+            String window = doc.contains("window") ? doc.getString("window") : null;
             String status = doc.contains("status") ? doc.getString("status") : "Unknown";
-            String paymentCode = doc.contains("paymentMethod") ? doc.getString("paymentMethod") : null;
+            String paymentCode = doc.contains("paymentMethod") ? doc.getString("paymentMethod") : "PAY_AT_SCHOOL";
+
             String friendly = prettyPaymentMethod(paymentCode);
             tvPaymentMethod.setText(friendly);
 
-
-            tvDateWindow.setText(date + " - " + window);
+            if (date != null && !date.isEmpty()) {
+                tvDateWindow.setText(date + " - " + (window != null ? window : ""));
+                tvDateWindow.setVisibility(View.VISIBLE);
+            } else {
+                tvDateWindow.setText("No appointment date set");
+                tvDateWindow.setVisibility(View.VISIBLE);
+            }
             tvStatus.setText("Status: " + status);
-            tvPaymentMethod.setText("Payment: " + paymentCode);
+
 
             // set tag so we can find later if needed
             item.setTag(docId);

@@ -6,6 +6,8 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class AdminDashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle s) {
@@ -14,15 +16,23 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
         Button btnManageClearance = findViewById(R.id.btnManageClearance);
         Button btnViewAppointments = findViewById(R.id.btnViewAppointments);
+        Button btnAdminSignOut = findViewById(R.id.btnAdminSignOut); // make sure layout includes this id
 
         btnManageClearance.setOnClickListener(v -> {
-            // To implement: activity to list students and manage their clearance
-            startActivity(new Intent(this, AdminManageClearanceActivity.class)); // implement when ready
+            startActivity(new Intent(this, AdminManageClearanceActivity.class));
         });
 
         btnViewAppointments.setOnClickListener(v -> {
-            // Could reuse your appointment list UI but with admin privileges
+            // Note: you might create a dedicated admin appointment view later.
             startActivity(new Intent(this, MyAppointmentsActivity.class));
+        });
+
+        btnAdminSignOut.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent i = new Intent(this, HomeActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
         });
     }
 }
