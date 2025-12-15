@@ -189,7 +189,7 @@ public class BookingActivity extends AppCompatActivity {
                     }
 
                     // No conflicting appointment found - call backend function
-                    callCreateAppointment(selectedDate, selectedWindow);
+                    callCreateAppointmentViaTransaction(selectedDate, selectedWindow);
                 })
                 .addOnFailureListener(e -> {
                     btnConfirm.setEnabled(true);
@@ -238,4 +238,115 @@ public class BookingActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void callCreateAppointmentViaTransaction(String date, String timeWindow) {
+        final FirebaseFirestore fs = db;
+        final String uid = auth.getCurrentUser().getUid();
+        final String slotId = date + "_" + timeWindow;
+        final String apptId = uid + "_" + slotId;
+        final com.google.firebase.firestore.DocumentReference apptRef = fs.collection("appointments").document(apptId);
+        final com.google.firebase.firestore.DocumentReference slotRef = fs.collection("slots").document(slotId);
+        final com.google.firebase.firestore.DocumentReference userRef = fs.collection("users").document(uid);
+
+        btnConfirm.setEnabled(false);
+        btnConfirm.setText("Booking...");
+
+        fs.runTransaction((com.google.firebase.firestore.Transaction.Function<Void>) transaction -> {
+            // 1) existing appointment
+            com.google.firebase.firestore.DocumentSnapshot apptSnap = transaction.get(apptRef);
+            if (apptSnap.exists()) {
+                String existingStatus = apptSnap.contains("status") ? apptSnap.getString("status") : null;
+                if (existingStatus != null && !existingStatus.equalsIgnoreCase("REJECTED")
+                        && !existingStatus.equalsIgnoreCase("CANCELLED")) {
+                    throw new RuntimeException("ALREADY_EXISTS");
+                }
+            }
+
+            // 2) user activeAppointments
+            com.google.firebase.firestore.DocumentSnapshot userSnap = transaction.get(userRef);
+            long active = 0;
+            if (userSnap.exists() && userSnap.contains("activeAppointments")) {
+                Object o = userSnap.get("activeAppointments");
+                if (o instanceof Number) active = ((Number) o).longValue();
+            }
+            final long MAX = 5;
+            if (active >= MAX) {
+                throw new RuntimeException("USER_LIMIT");
+            }
+
+            // 3) slot check
+            com.google.firebase.firestore.DocumentSnapshot slotSnap = transaction.get(slotRef);
+            long bookedCount = 0;
+            long capacity = 400; // default
+            if (slotSnap.exists()) {
+                Object bc = slotSnap.get("bookedCount");
+                Object cap = slotSnap.get("capacity");
+                if (bc instanceof Number) bookedCount = ((Number) bc).longValue();
+                if (cap instanceof Number) capacity = ((Number) cap).longValue();
+            }
+
+            if (bookedCount >= capacity) {
+                throw new RuntimeException("SLOT_FULL");
+            }
+
+            // 4) create appointment
+            Map<String, Object> apptData = new HashMap<>();
+            apptData.put("userId", uid);
+            apptData.put("date", date);
+            apptData.put("window", timeWindow);
+            apptData.put("status", "PENDING");
+            apptData.put("paymentMethod", "PAY_AT_SCHOOL");
+            apptData.put("createdAt", com.google.firebase.Timestamp.now());
+            // mark as client-created (so server triggers can still ignore if needed)
+            apptData.put("createdByClient", true);
+
+            transaction.set(apptRef, apptData);
+
+            // 5) create/update slot
+            if (!slotSnap.exists()) {
+                Map<String, Object> slotData = new HashMap<>();
+                slotData.put("date", date);
+                slotData.put("window", timeWindow);
+                slotData.put("capacity", capacity);
+                slotData.put("bookedCount", 1);
+                slotData.put("createdAt", com.google.firebase.Timestamp.now());
+                transaction.set(slotRef, slotData);
+            } else {
+                transaction.update(slotRef, "bookedCount", bookedCount + 1, "updatedAt", com.google.firebase.Timestamp.now());
+            }
+
+            // 6) increment user's activeAppointments
+            if (!userSnap.exists()) {
+                Map<String, Object> newUser = new HashMap<>();
+                newUser.put("activeAppointments", 1);
+                transaction.set(userRef, newUser, com.google.firebase.firestore.SetOptions.merge());
+            } else {
+                transaction.update(userRef, "activeAppointments", active + 1);
+            }
+
+            return null;
+        }).addOnSuccessListener(aVoid -> {
+            btnConfirm.setEnabled(true);
+            btnConfirm.setText("Confirm Booking");
+            Toast.makeText(this, "Booked successfully!", Toast.LENGTH_LONG).show();
+            Intent i = new Intent(this, MyAppointmentsActivity.class);
+            startActivity(i);
+            finish();
+        }).addOnFailureListener(e -> {
+            btnConfirm.setEnabled(true);
+            btnConfirm.setText("Confirm Booking");
+            Log.e(TAG, "Transaction failed", e);
+            String msg = e.getMessage() != null ? e.getMessage() : e.toString();
+            if (msg.contains("ALREADY_EXISTS")) {
+                Toast.makeText(this, "You already have an appointment for this slot.", Toast.LENGTH_LONG).show();
+            } else if (msg.contains("USER_LIMIT")) {
+                Toast.makeText(this, "You reached the maximum number of active appointments.", Toast.LENGTH_LONG).show();
+            } else if (msg.contains("SLOT_FULL")) {
+                Toast.makeText(this, "Selected slot is full.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Booking failed: " + msg, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 }

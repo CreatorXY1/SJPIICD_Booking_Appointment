@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "sjpiicd-server"
-  }
+    "default": "sjpiicd-server",
+    "sjpiicd project": "sjpiicd-server"
+  },
+  "targets": {},
+  "etags": {}
 }

@@ -1,7 +1,17 @@
 {
-  "functions": {
-    "source": "sjpiicd_cloudbase_functions"
-},
+  "functions": [
+    {
+      "codebase": "default",
+      "source": "sjpiicd_cloudbase_functions",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
   "emulators": {
     "auth": {
       "port": 9099
@@ -16,5 +26,11 @@
       "enabled": true
     },
     "singleProjectMode": true
+  },
+  "firestore": {
+    "database": "(default)",
+    "location": "asia-southeast1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }

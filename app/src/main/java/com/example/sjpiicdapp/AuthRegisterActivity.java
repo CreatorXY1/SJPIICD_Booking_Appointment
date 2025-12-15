@@ -177,7 +177,10 @@ public class AuthRegisterActivity extends AppCompatActivity {
         u.put("email", email);
         u.put("role", role);
         if (!TextUtils.isEmpty(username)) u.put("username", username);
+// NEW: initialize activeAppointments to 0 for new users
+        u.put("activeAppointments", 0);
         u.put("createdAt", Timestamp.now());
+
 
         // <-- FIXED: write to "users" collection, NOT "usernames"
         db.collection("users").document(uid)
